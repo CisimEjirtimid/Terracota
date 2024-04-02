@@ -33,6 +33,7 @@
 
 # Visual Studio resources
 .vs/*
+*.vcxproj.user
 
 # Build collaterals - update as we add other projects to solution
 x64/*
