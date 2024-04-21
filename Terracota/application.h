@@ -8,10 +8,7 @@
 #define CENTURION_NO_OPENGL
 #include <centurion/centurion.hpp>
 
-// Vulkan init/include
-#define VK_USE_PLATFORM_WIN32_KHR // Enable the WSI extensions
-#define NOMINMAX
-#include <vulkan/vulkan_raii.hpp>
+#include "vk/utils.h"
 
 namespace terracota
 {
@@ -36,7 +33,6 @@ namespace terracota
 
                 ConstructParams(const vk::ApplicationInfo& application_info);
             };
-
 
             vk::raii::Context context;
             vk::raii::Instance instance;

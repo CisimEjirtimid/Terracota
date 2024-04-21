@@ -14,6 +14,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\vk">
+      <UniqueIdentifier>{419452a2-396d-4cd5-91bb-ce39c6ee0fac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\vk">
+      <UniqueIdentifier>{6cd22398-84d5-45f1-9db2-e8c4c6aca614}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -22,10 +28,16 @@
     <ClCompile Include="application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="vk\utils.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vk\utils.h">
+      <Filter>Header Files\vk</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/vec_swizzle.hpp>
 
-#include <vector>
+#include <iostream>
 
 namespace terracota
 {
@@ -22,7 +22,7 @@ namespace terracota
                 .setPEngineName("Terracota Rendering Engine")
                 .setEngineVersion(1)
                 .setApiVersion(VK_API_VERSION_1_0);
-        }
+        }   
 
         // Create a Vulkan surface for rendering
         VkSurfaceKHR raw_surface(cen::window& window, vk::raii::Instance& instance)
@@ -70,10 +70,16 @@ namespace terracota
     }
 
     Application::V::V(cen::window& window, const Application::V::ConstructParams& params)
-        : context{ vk::raii::Context{} }
-        , instance{ context, params.info }
+        : instance{ context, params.info }
         , surface{ instance, raw_surface(window, instance) }
     {
+        std::cout << "Extensions:" << std::endl;
+        for (auto& extension : vk::extensions())
+            std::cout << extension.extensionName << std::endl;
+
+        std::cout << "Layers:" << std::endl;
+        for (auto& layer : vk::layers())
+            std::cout << layer.layerName << std::endl;
     }
 
     void Application::loop()
