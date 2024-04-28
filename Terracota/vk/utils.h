@@ -9,7 +9,22 @@ namespace terracota::vk
 {
     using namespace ::vk;
 
-    std::vector<ExtensionProperties> extensions();
+    using name = vk::ArrayWrapper1D<char, vk::MaxExtensionNameSize>;
 
-    std::vector<LayerProperties> layers();
+    class name_vector
+        : public std::vector<name>
+    {
+        std::vector<const char*> _raw;
+
+    public:
+        name_vector() = default;
+        name_vector(const name_vector&) = default;
+        name_vector(std::vector<const char*>& other);
+
+        std::vector<const char*>& native();
+    };
+
+    name_vector extensions();
+
+    name_vector layers();
 }

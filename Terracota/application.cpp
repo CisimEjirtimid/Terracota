@@ -7,6 +7,8 @@
 
 #include <iostream>
 
+#include "strcmp_functor.h"
+
 namespace terracota
 {
     // TODO: customization options for `application_info` and `instance_info` functions
@@ -49,13 +51,25 @@ namespace terracota
         auto maybe_extensions = cen::vk::required_extensions();
 
         if (!maybe_extensions)
-            throw std::runtime_error{ "No Vulkan Extensions!" };
+            throw std::runtime_error{ "No Vulkan extensions!" };
 
-        extensions = *maybe_extensions;
+        vk::name_vector required_extensions{ *maybe_extensions };
+        std::sort(required_extensions.begin(), required_extensions.end(), cisim::strcmp_functor{});
+
+        auto available_extensions = vk::extensions();
+        std::sort(available_extensions.begin(), available_extensions.end(), cisim::strcmp_functor{});
+
+        std::set_intersection(
+            required_extensions.begin(), required_extensions.end(),
+            available_extensions.begin(), available_extensions.end(),
+            std::back_inserter(extensions), cisim::strcmp_functor{});
+
+        if (required_extensions.size() != extensions.size())
+            throw std::runtime_error{ "Required extensions not supported!" };
 
         // Use validation layers if this is a debug build
 #if defined(_DEBUG)
-        layers.push_back("VK_LAYER_KHRONOS_validation");
+        layers.push_back(std::string_view{ "VK_LAYER_KHRONOS_validation" });
 #endif
 
         // vk::InstanceCreateInfo is where the programmer specifies the layers and/or extensions that
@@ -63,24 +77,14 @@ namespace terracota
         info = vk::InstanceCreateInfo()
             .setFlags(vk::InstanceCreateFlags())
             .setPApplicationInfo(&application_info)
-            .setEnabledExtensionCount(static_cast<uint32_t>(extensions.size()))
-            .setPpEnabledExtensionNames(extensions.data())
-            .setEnabledLayerCount(static_cast<uint32_t>(layers.size()))
-            .setPpEnabledLayerNames(layers.data());
+            .setPEnabledExtensionNames(extensions.native())
+            .setPEnabledLayerNames(layers.native());
     }
 
     Application::V::V(cen::window& window, const Application::V::ConstructParams& params)
         : instance{ context, params.info }
         , surface{ instance, raw_surface(window, instance) }
-    {
-        std::cout << "Extensions:" << std::endl;
-        for (auto& extension : vk::extensions())
-            std::cout << extension.extensionName << std::endl;
-
-        std::cout << "Layers:" << std::endl;
-        for (auto& layer : vk::layers())
-            std::cout << layer.layerName << std::endl;
-    }
+    {}
 
     void Application::loop()
     {

@@ -6,7 +6,12 @@
 #define CENTURION_NO_SDL_MIXER
 #define CENTURION_NO_SDL_TTF
 #define CENTURION_NO_OPENGL
+
+// deprecation warning suppression
+#pragma warning(push)
+#pragma warning(disable:4996)
 #include <centurion/centurion.hpp>
+#pragma warning(pop)
 
 #include "vk/utils.h"
 
@@ -26,8 +31,8 @@ namespace terracota
         {
             struct ConstructParams
             {
-                std::vector<const char*> extensions;
-                std::vector<const char*> layers;
+                vk::name_vector extensions;
+                vk::name_vector layers;
 
                 vk::InstanceCreateInfo info;
 
