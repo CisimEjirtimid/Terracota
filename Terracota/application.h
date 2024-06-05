@@ -17,40 +17,42 @@
 
 namespace terracota
 {
-    class Application
+    class application
     {
-        struct C
+        struct c
         {
             cen::sdl context;
             cen::window window;
 
-            C(const std::string& title, const cen::iarea& size);
+            c(const std::string& title, const cen::iarea& size);
         } _centurion;
 
-        struct V
+        struct v
         {
-            struct ConstructParams
+            struct construct_params
             {
                 vk::name_vector extensions;
                 vk::name_vector layers;
 
                 vk::InstanceCreateInfo info;
 
-                ConstructParams(const vk::ApplicationInfo& application_info);
+                construct_params(const vk::ApplicationInfo& application_info);
             };
 
             vk::raii::Context context;
             vk::raii::Instance instance;
             vk::raii::SurfaceKHR surface;
 
-            V(cen::window& window, const ConstructParams& params);
+            vk::raii::Device device;
+
+            v(cen::window& window, const construct_params& params);
         } _vulkan;
 
         void loop();
 
     public:
-        Application();
-        ~Application();
+        application();
+        ~application();
 
         void run();
     };

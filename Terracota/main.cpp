@@ -9,7 +9,7 @@ int main()
 {
     try
     {
-        terracota::Application app;
+        terracota::application app;
 
         app.run();
 

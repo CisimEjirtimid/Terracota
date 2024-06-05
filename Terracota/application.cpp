@@ -6,6 +6,8 @@
 #include <glm/gtx/vec_swizzle.hpp>
 
 #include <iostream>
+#include <execution>
+#include <type_traits>
 
 #include "strcmp_functor.h"
 
@@ -24,7 +26,7 @@ namespace terracota
                 .setPEngineName("Terracota Rendering Engine")
                 .setEngineVersion(1)
                 .setApiVersion(VK_API_VERSION_1_0);
-        }   
+        }
 
         // Create a Vulkan surface for rendering
         VkSurfaceKHR raw_surface(cen::window& window, vk::raii::Instance& instance)
@@ -33,9 +35,49 @@ namespace terracota
             cen::vk::make_surface(window, *instance, &raw);
             return std::move(raw);
         }
+
+        vk::raii::PhysicalDevice pick_physical_device(vk::raii::Instance& instance)
+        {
+            auto valid = [](vk::raii::PhysicalDevice& physical_device)
+            {
+                auto properties = physical_device.getProperties();
+                auto features = physical_device.getFeatures();
+
+                auto qfps = physical_device.getQueueFamilyProperties();
+
+                auto queue_flag_predicate = [](vk::QueueFlagBits flag_bit)
+                {
+                    return [flag_bit](vk::QueueFamilyProperties& qfp) -> bool
+                    {
+                        return (qfp.queueFlags & flag_bit) == flag_bit;
+                    };
+                };
+
+                using flag_predicate = std::invoke_result_t<decltype(queue_flag_predicate), vk::QueueFlagBits>;
+
+                auto exists_queue = [](std::vector<vk::QueueFamilyProperties>& qfps, flag_predicate&& predicate)
+                {
+                    return std::find_if(std::execution::par, qfps.begin(), qfps.end(), predicate) != qfps.end();
+                };
+
+                auto graphics_queue = exists_queue(qfps, queue_flag_predicate(vk::QueueFlagBits::eGraphics));
+                auto compute_queue = exists_queue(qfps, queue_flag_predicate(vk::QueueFlagBits::eCompute));
+
+                // TODO: make these requirements configurable somehow
+                return properties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu
+                    && features.shaderFloat64 != 0 // bools are uint32_t
+                    && graphics_queue && compute_queue; // these are proper bool
+            };
+
+            for (auto& physical_device : vk::raii::PhysicalDevices{ instance })
+                if (valid(physical_device))
+                    return physical_device;
+
+            throw std::runtime_error{ "No valid physical device found!" };
+        }
     }
 
-    Application::C::C(const std::string& title, const cen::iarea& size)
+    application::c::c(const std::string& title, const cen::iarea& size)
         : context{ cen::sdl_cfg{ SDL_INIT_VIDEO } }
         , window{
             title.c_str(),
@@ -45,7 +87,7 @@ namespace terracota
     {
     }
 
-    Application::V::ConstructParams::ConstructParams(const vk::ApplicationInfo& application_info)
+    application::v::construct_params::construct_params(const vk::ApplicationInfo& application_info)
     {
         // Get WSI extensions from SDL (we can add more if we like - we just can't remove these)
         auto maybe_extensions = cen::vk::required_extensions();
@@ -81,12 +123,14 @@ namespace terracota
             .setPEnabledLayerNames(layers.native());
     }
 
-    Application::V::V(cen::window& window, const Application::V::ConstructParams& params)
+    application::v::v(cen::window& window, const application::v::construct_params& params)
         : instance{ context, params.info }
         , surface{ instance, raw_surface(window, instance) }
-    {}
+        , device{ pick_physical_device(instance), vk::DeviceCreateInfo{} } // TODO: provide vk::DeviceCreateInfo
+    {
+    }
 
-    void Application::loop()
+    void application::loop()
     {
         bool running = true;
 
@@ -108,21 +152,21 @@ namespace terracota
         }
     }
 
-    Application::Application()
+    application::application()
         : _centurion{ "Terracota", cen::iarea{ 1280, 720 } }
-        , _vulkan{ _centurion.window, Application::V::ConstructParams{ application_info("Terracota") } }
+        , _vulkan{ _centurion.window, application::v::construct_params{ application_info("Terracota") } }
     {
         // This is where rest of initializtion for a program should be performed
 
         _centurion.window.show();
     }
 
-    Application::~Application()
+    application::~application()
     {
         _centurion.window.hide();
     }
 
-    void Application::run()
+    void application::run()
     {
         loop();
     }
