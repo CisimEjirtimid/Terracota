@@ -34,15 +34,38 @@ namespace terracota
                 vk::name_vector extensions;
                 vk::name_vector layers;
 
-                vk::InstanceCreateInfo info;
+                vk::InstanceCreateInfo instance_info;
+
+                vk::PhysicalDeviceFeatures physical_device_features;
+                vk::DeviceQueueCreateInfo queue_info;
+                vk::DeviceCreateInfo device_info;
 
                 construct_params(const vk::ApplicationInfo& application_info);
+            };
+
+            struct device_create_info
+            {
+                // idx 0: graphics, idx 1: compute
+                static constexpr size_t qi_graphics_idx = 0;
+                static constexpr size_t qi_compute_idx = 1;
+
+                std::array<vk::DeviceQueueCreateInfo, 2> queue_infos;
+                std::array<float, 2> queue_priorities{ 1.f, 1.f };
+
+                vk::PhysicalDeviceFeatures physical_device_features;
+
+                vk::DeviceCreateInfo device_info;
+
+                device_create_info(vk::raii::PhysicalDevice& physical_device);
             };
 
             vk::raii::Context context;
             vk::raii::Instance instance;
             vk::raii::SurfaceKHR surface;
 
+            vk::raii::PhysicalDevice physical_device;
+
+            device_create_info dci; // used to create the device
             vk::raii::Device device;
 
             v(cen::window& window, const construct_params& params);

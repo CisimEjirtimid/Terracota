@@ -49,7 +49,7 @@ namespace terracota
                 {
                     return [flag_bit](vk::QueueFamilyProperties& qfp) -> bool
                     {
-                        return (qfp.queueFlags & flag_bit) == flag_bit;
+                        return bool(qfp.queueFlags & flag_bit);
                     };
                 };
 
@@ -116,17 +116,49 @@ namespace terracota
 
         // vk::InstanceCreateInfo is where the programmer specifies the layers and/or extensions that
         // are needed.
-        info = vk::InstanceCreateInfo()
-            .setFlags(vk::InstanceCreateFlags())
+        instance_info = vk::InstanceCreateInfo()
             .setPApplicationInfo(&application_info)
             .setPEnabledExtensionNames(extensions.native())
             .setPEnabledLayerNames(layers.native());
     }
 
+    application::v::device_create_info::device_create_info(vk::raii::PhysicalDevice& physical_device)
+    {
+        uint32_t current_idx = 0;
+        uint32_t graphics_idx = std::numeric_limits<uint32_t>::max();
+
+        for (const auto& qfp : physical_device.getQueueFamilyProperties())
+        {
+            if (qfp.queueFlags & vk::QueueFlagBits::eGraphics)
+                queue_infos[qi_graphics_idx].setQueueFamilyIndex(current_idx);
+
+            if (qfp.queueFlags & vk::QueueFlagBits::eCompute)
+                queue_infos[qi_compute_idx].setQueueFamilyIndex(current_idx);
+
+            current_idx++;
+        }
+
+        queue_infos[qi_graphics_idx]
+            .setQueueCount(1)
+            .setPQueuePriorities(&queue_priorities[qi_graphics_idx]);
+
+        queue_infos[qi_compute_idx]
+            .setQueueCount(1)
+            .setPQueuePriorities(&queue_priorities[qi_compute_idx]);
+
+        vk::PhysicalDeviceFeatures physical_device_features; // TODO: specify features later
+
+        device_info = vk::DeviceCreateInfo()
+            .setPEnabledFeatures(&physical_device_features)
+            .setQueueCreateInfos(queue_infos);
+    }
+
     application::v::v(cen::window& window, const application::v::construct_params& params)
-        : instance{ context, params.info }
+        : instance{ context, params.instance_info }
         , surface{ instance, raw_surface(window, instance) }
-        , device{ pick_physical_device(instance), vk::DeviceCreateInfo{} } // TODO: provide vk::DeviceCreateInfo
+        , physical_device{ pick_physical_device(instance) }
+        , dci{ physical_device }
+        , device{ physical_device, dci.device_info }
     {
     }
 
