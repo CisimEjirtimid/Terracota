@@ -146,8 +146,7 @@ namespace terracota
             .setQueueCount(1)
             .setPQueuePriorities(&queue_priorities[qi_compute_idx]);
 
-        vk::PhysicalDeviceFeatures physical_device_features; // TODO: specify features later
-
+        // TODO: specify physical device features later
         device_info = vk::DeviceCreateInfo()
             .setPEnabledFeatures(&physical_device_features)
             .setQueueCreateInfos(queue_infos);
