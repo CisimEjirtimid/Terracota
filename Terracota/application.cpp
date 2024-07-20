@@ -9,8 +9,6 @@
 #include <execution>
 #include <type_traits>
 
-#include "strcmp_functor.h"
-
 namespace terracota
 {
     // TODO: customization options for `application_info` and `instance_info` functions
@@ -87,77 +85,14 @@ namespace terracota
     {
     }
 
-    application::v::construct_params::construct_params(const vk::ApplicationInfo& application_info)
-    {
-        // Get WSI extensions from SDL (we can add more if we like - we just can't remove these)
-        auto maybe_extensions = cen::vk::required_extensions();
-
-        if (!maybe_extensions)
-            throw std::runtime_error{ "No Vulkan extensions!" };
-
-        vk::name_vector required_extensions{ *maybe_extensions };
-        std::sort(required_extensions.begin(), required_extensions.end(), cisim::strcmp_functor{});
-
-        auto available_extensions = vk::extensions();
-        std::sort(available_extensions.begin(), available_extensions.end(), cisim::strcmp_functor{});
-
-        std::set_intersection(
-            required_extensions.begin(), required_extensions.end(),
-            available_extensions.begin(), available_extensions.end(),
-            std::back_inserter(extensions), cisim::strcmp_functor{});
-
-        if (required_extensions.size() != extensions.size())
-            throw std::runtime_error{ "Required extensions not supported!" };
-
-        // Use validation layers if this is a debug build
-#if defined(_DEBUG)
-        layers.push_back(std::string_view{ "VK_LAYER_KHRONOS_validation" });
-#endif
-
-        // vk::InstanceCreateInfo is where the programmer specifies the layers and/or extensions that
-        // are needed.
-        instance_info = vk::InstanceCreateInfo()
-            .setPApplicationInfo(&application_info)
-            .setPEnabledExtensionNames(extensions.native())
-            .setPEnabledLayerNames(layers.native());
-    }
-
-    application::v::device_create_info::device_create_info(vk::raii::PhysicalDevice& physical_device)
-    {
-        uint32_t current_idx = 0;
-        uint32_t graphics_idx = std::numeric_limits<uint32_t>::max();
-
-        for (const auto& qfp : physical_device.getQueueFamilyProperties())
-        {
-            if (qfp.queueFlags & vk::QueueFlagBits::eGraphics)
-                queue_infos[qi_graphics_idx].setQueueFamilyIndex(current_idx);
-
-            if (qfp.queueFlags & vk::QueueFlagBits::eCompute)
-                queue_infos[qi_compute_idx].setQueueFamilyIndex(current_idx);
-
-            current_idx++;
-        }
-
-        queue_infos[qi_graphics_idx]
-            .setQueueCount(1)
-            .setPQueuePriorities(&queue_priorities[qi_graphics_idx]);
-
-        queue_infos[qi_compute_idx]
-            .setQueueCount(1)
-            .setPQueuePriorities(&queue_priorities[qi_compute_idx]);
-
-        // TODO: specify physical device features later
-        device_info = vk::DeviceCreateInfo()
-            .setPEnabledFeatures(&physical_device_features)
-            .setQueueCreateInfos(queue_infos);
-    }
-
-    application::v::v(cen::window& window, const application::v::construct_params& params)
+    application::v::v(cen::window& window, const vk::construct_params& params)
         : instance{ context, params.instance_info }
         , surface{ instance, raw_surface(window, instance) }
         , physical_device{ pick_physical_device(instance) }
         , dci{ physical_device }
         , device{ physical_device, dci.device_info }
+        , graphics_queue{ device, dci.queue_infos[vk::queue_info_index::graphics].queueFamilyIndex, 0 }
+        , compute_queue{ device, dci.queue_infos[vk::queue_info_index::compute].queueFamilyIndex, 0 }
     {
     }
 
@@ -185,7 +120,13 @@ namespace terracota
 
     application::application()
         : _centurion{ "Terracota", cen::iarea{ 1280, 720 } }
-        , _vulkan{ _centurion.window, application::v::construct_params{ application_info("Terracota") } }
+        , _vulkan{
+            _centurion.window,
+            vk::construct_params{
+                application_info("Terracota"),
+                cen::vk::required_extensions()
+            }
+        }
     {
         // This is where rest of initializtion for a program should be performed
 

@@ -162,10 +162,15 @@
   <ItemGroup>
     <ClCompile Include="application.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="vk\construct_params.cpp" />
+    <ClCompile Include="vk\device_create_info.cpp" />
     <ClCompile Include="vk\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
+    <ClInclude Include="vk\construct_params.h" />
+    <ClInclude Include="vk\device_create_info.h" />
+    <ClInclude Include="vk\queue_info_index.h" />
     <ClInclude Include="vk\utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

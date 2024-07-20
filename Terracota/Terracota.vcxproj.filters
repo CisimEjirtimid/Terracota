@@ -31,12 +31,27 @@
     <ClCompile Include="vk\utils.cpp">
       <Filter>Source Files\vk</Filter>
     </ClCompile>
+    <ClCompile Include="vk\construct_params.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="vk\device_create_info.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="vk\utils.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="vk\construct_params.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="vk\device_create_info.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="vk\queue_info_index.h">
       <Filter>Header Files\vk</Filter>
     </ClInclude>
   </ItemGroup>
