@@ -6,14 +6,16 @@ namespace terracota::vk
 {
     struct device_create_info
     {
-        // idx 0: graphics, idx 1: compute
-        std::array<vk::DeviceQueueCreateInfo, 2> queue_infos;
-        std::array<float, 2> queue_priorities{ 1.f, 1.f };
+        std::vector<vk::DeviceQueueCreateInfo> queue_infos;
+        std::vector<float> queue_priorities;
+
+        // idx 0: graphics, idx 1: presentation, idx 2: compute
+        std::array<uint32_t, queue_info_index::count> queue_family_indices;
 
         vk::PhysicalDeviceFeatures physical_device_features;
 
         vk::DeviceCreateInfo device_info;
 
-        device_create_info(vk::raii::PhysicalDevice& physical_device);
+        device_create_info(vk::raii::PhysicalDevice& physical_device, vk::raii::SurfaceKHR& surface);
     };
 }

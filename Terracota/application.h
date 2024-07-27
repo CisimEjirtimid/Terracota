@@ -40,6 +40,7 @@ namespace terracota
             vk::raii::Device device;
 
             vk::raii::Queue graphics_queue;
+            vk::raii::Queue presentation_queue;
             vk::raii::Queue compute_queue;
 
             v(cen::window& window, const vk::construct_params& params);

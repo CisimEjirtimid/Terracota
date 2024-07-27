@@ -89,10 +89,11 @@ namespace terracota
         : instance{ context, params.instance_info }
         , surface{ instance, raw_surface(window, instance) }
         , physical_device{ pick_physical_device(instance) }
-        , dci{ physical_device }
+        , dci{ physical_device, surface }
         , device{ physical_device, dci.device_info }
-        , graphics_queue{ device, dci.queue_infos[vk::queue_info_index::graphics].queueFamilyIndex, 0 }
-        , compute_queue{ device, dci.queue_infos[vk::queue_info_index::compute].queueFamilyIndex, 0 }
+        , graphics_queue{ device, dci.queue_family_indices[vk::queue_info_index::graphics], 0 }
+        , presentation_queue{ device, dci.queue_family_indices[vk::queue_info_index::presentation], 0 }
+        , compute_queue{ device, dci.queue_family_indices[vk::queue_info_index::compute], 0 }
     {
     }
 
