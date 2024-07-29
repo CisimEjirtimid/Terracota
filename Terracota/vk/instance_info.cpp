@@ -1,9 +1,8 @@
-#include "construct_params.h"
-#include "strcmp_functor.h"
+#include "instance_info.h"
 
 namespace terracota::vk
 {
-    construct_params::construct_params(const vk::ApplicationInfo& application_info, std::optional<std::vector<const char*>> maybe_extensions)
+    instance_info::instance_info(const vk::ApplicationInfo& application_info, std::optional<std::vector<const char*>> maybe_extensions)
     {
         // Get WSI extensions from SDL (we can add more if we like - we just can't remove these)
 
@@ -11,15 +10,9 @@ namespace terracota::vk
             throw std::runtime_error{ "No Vulkan extensions!" };
 
         vk::name_vector required_extensions{ *maybe_extensions };
-        std::sort(required_extensions.begin(), required_extensions.end(), cisim::strcmp_functor{});
+        vk::name_vector available_extensions = vk::extensions();
 
-        auto available_extensions = vk::extensions();
-        std::sort(available_extensions.begin(), available_extensions.end(), cisim::strcmp_functor{});
-
-        std::set_intersection(
-            required_extensions.begin(), required_extensions.end(),
-            available_extensions.begin(), available_extensions.end(),
-            std::back_inserter(extensions), cisim::strcmp_functor{});
+        extensions = required_extensions.intersect(available_extensions);
 
         if (required_extensions.size() != extensions.size())
             throw std::runtime_error{ "Required extensions not supported!" };
@@ -31,7 +24,7 @@ namespace terracota::vk
 
         // vk::InstanceCreateInfo is where the programmer specifies the layers and/or extensions that
         // are needed.
-        instance_info = vk::InstanceCreateInfo()
+        info = vk::InstanceCreateInfo()
             .setPApplicationInfo(&application_info)
             .setPEnabledExtensionNames(extensions.native())
             .setPEnabledLayerNames(layers.native());

@@ -22,6 +22,8 @@ namespace terracota::vk
         name_vector(std::vector<const char*>& other);
 
         std::vector<const char*>& native();
+
+        vk::name_vector intersect(vk::name_vector& other);
     };
 
     name_vector extensions();

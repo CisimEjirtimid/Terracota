@@ -1,9 +1,9 @@
-#include "device_create_info.h"
+#include "device_info.h"
 #include <bitset>
 
 namespace terracota::vk
 {
-    device_create_info::device_create_info(vk::raii::PhysicalDevice& physical_device, vk::raii::SurfaceKHR& surface)
+    device_info::device_info(vk::raii::PhysicalDevice& physical_device, vk::raii::SurfaceKHR& surface)
     {
         using qi = queue_info_index;
 
@@ -56,9 +56,16 @@ namespace terracota::vk
             current_idx++;
         }
 
-        // TODO: specify physical device features later
-        device_info = vk::DeviceCreateInfo()
-            .setPEnabledFeatures(&physical_device_features)
+        required_physical_device_features
+            .setTessellationShader(true)
+            .setShaderFloat64(true)
+            .setGeometryShader(true);
+
+        required_extensions.push_back(std::string_view{ vk::KHRSwapchainExtensionName });
+
+        info = vk::DeviceCreateInfo()
+            .setPEnabledFeatures(&required_physical_device_features)
+            .setPEnabledExtensionNames(required_extensions.native())
             .setQueueCreateInfos(queue_infos);
     }
 }

@@ -13,8 +13,9 @@
 #include <centurion/centurion.hpp>
 #pragma warning(pop)
 
-#include "vk/construct_params.h"
-#include "vk/device_create_info.h"
+#include "vk/instance_info.h"
+#include "vk/device_info.h"
+#include "vk/swap_chain_info.h"
 
 namespace terracota
 {
@@ -36,14 +37,17 @@ namespace terracota
 
             vk::raii::PhysicalDevice physical_device;
 
-            vk::device_create_info dci; // used to create the device
+            vk::device_info di;
             vk::raii::Device device;
 
             vk::raii::Queue graphics_queue;
             vk::raii::Queue presentation_queue;
             vk::raii::Queue compute_queue;
 
-            v(cen::window& window, const vk::construct_params& params);
+            vk::swap_chain_info sci;
+            //vk::raii::SwapchainKHR swap_chain;
+
+            v(cen::window& window, const vk::instance_info& params);
         } _vulkan;
 
         void loop();

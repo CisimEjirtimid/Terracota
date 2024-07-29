@@ -31,10 +31,13 @@
     <ClCompile Include="vk\utils.cpp">
       <Filter>Source Files\vk</Filter>
     </ClCompile>
-    <ClCompile Include="vk\construct_params.cpp">
+    <ClCompile Include="vk\instance_info.cpp">
       <Filter>Source Files\vk</Filter>
     </ClCompile>
-    <ClCompile Include="vk\device_create_info.cpp">
+    <ClCompile Include="vk\device_info.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="vk\swap_chain_info.cpp">
       <Filter>Source Files\vk</Filter>
     </ClCompile>
   </ItemGroup>
@@ -45,13 +48,16 @@
     <ClInclude Include="vk\utils.h">
       <Filter>Header Files\vk</Filter>
     </ClInclude>
-    <ClInclude Include="vk\construct_params.h">
+    <ClInclude Include="vk\instance_info.h">
       <Filter>Header Files\vk</Filter>
     </ClInclude>
-    <ClInclude Include="vk\device_create_info.h">
+    <ClInclude Include="vk\device_info.h">
       <Filter>Header Files\vk</Filter>
     </ClInclude>
     <ClInclude Include="vk\queue_info_index.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="vk\swap_chain_info.h">
       <Filter>Header Files\vk</Filter>
     </ClInclude>
   </ItemGroup>

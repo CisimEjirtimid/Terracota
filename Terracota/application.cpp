@@ -63,7 +63,9 @@ namespace terracota
 
                 // TODO: make these requirements configurable somehow
                 return properties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu
-                    && features.shaderFloat64 != 0 // bools are uint32_t
+                    && features.shaderFloat64 // bools are uint32_t
+                    && features.tessellationShader
+                    && features.geometryShader
                     && graphics_queue && compute_queue; // these are proper bool
             };
 
@@ -85,15 +87,17 @@ namespace terracota
     {
     }
 
-    application::v::v(cen::window& window, const vk::construct_params& params)
-        : instance{ context, params.instance_info }
+    application::v::v(cen::window& window, const vk::instance_info& ii)
+        : instance{ context, ii.info }
         , surface{ instance, raw_surface(window, instance) }
         , physical_device{ pick_physical_device(instance) }
-        , dci{ physical_device, surface }
-        , device{ physical_device, dci.device_info }
-        , graphics_queue{ device, dci.queue_family_indices[vk::queue_info_index::graphics], 0 }
-        , presentation_queue{ device, dci.queue_family_indices[vk::queue_info_index::presentation], 0 }
-        , compute_queue{ device, dci.queue_family_indices[vk::queue_info_index::compute], 0 }
+        , di{ physical_device, surface }
+        , device{ physical_device, di.info }
+        , graphics_queue{ device, di.queue_family_indices[vk::queue_info_index::graphics], 0 }
+        , presentation_queue{ device, di.queue_family_indices[vk::queue_info_index::presentation], 0 }
+        , compute_queue{ device, di.queue_family_indices[vk::queue_info_index::compute], 0 }
+        , sci{ physical_device, surface }
+        //, swap_chain{ device, sci.info }
     {
     }
 
@@ -123,7 +127,7 @@ namespace terracota
         : _centurion{ "Terracota", cen::iarea{ 1280, 720 } }
         , _vulkan{
             _centurion.window,
-            vk::construct_params{
+            vk::instance_info{
                 application_info("Terracota"),
                 cen::vk::required_extensions()
             }
