@@ -57,4 +57,10 @@ namespace terracota::vk
 
         return result;
     }
+
+    bool valid(vk::Extent2D& extent)
+    {
+        return extent.width != std::numeric_limits<uint32_t>::max()
+            && extent.height != std::numeric_limits<uint32_t>::max();
+    }
 }

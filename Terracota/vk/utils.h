@@ -29,4 +29,6 @@ namespace terracota::vk
     name_vector extensions();
 
     name_vector layers();
+
+    bool valid(vk::Extent2D& extent);
 }

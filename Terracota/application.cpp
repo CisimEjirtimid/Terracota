@@ -96,8 +96,8 @@ namespace terracota
         , graphics_queue{ device, di.queue_family_indices[vk::queue_info_index::graphics], 0 }
         , presentation_queue{ device, di.queue_family_indices[vk::queue_info_index::presentation], 0 }
         , compute_queue{ device, di.queue_family_indices[vk::queue_info_index::compute], 0 }
-        , sci{ physical_device, surface }
-        //, swap_chain{ device, sci.info }
+        , sci{ physical_device, surface, vk::Extent2D{ window.size().width, window.size().height } }
+        , swap_chain{ device, sci.info }
     {
     }
 

@@ -45,7 +45,7 @@ namespace terracota
             vk::raii::Queue compute_queue;
 
             vk::swap_chain_info sci;
-            //vk::raii::SwapchainKHR swap_chain;
+            vk::raii::SwapchainKHR swap_chain;
 
             v(cen::window& window, const vk::instance_info& params);
         } _vulkan;

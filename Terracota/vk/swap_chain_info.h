@@ -12,6 +12,6 @@ namespace terracota::vk
 
         vk::SwapchainCreateInfoKHR info;
 
-        swap_chain_info(vk::raii::PhysicalDevice& physical_device, vk::raii::SurfaceKHR& surface);
+        swap_chain_info(vk::raii::PhysicalDevice& physical_device, vk::raii::SurfaceKHR& surface, const vk::Extent2D& window_size);
     };
 }
