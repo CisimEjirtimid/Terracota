@@ -17,7 +17,7 @@ namespace terracota::vk
 
             if (qfp.queueFlags & vk::QueueFlagBits::eGraphics)
             {
-                queue_family_indices[qi::graphics] = current_idx;
+                queue_family_index[qi::graphics] = current_idx;
                 set[qi::graphics] = true;
 
                 selected = true;
@@ -25,7 +25,7 @@ namespace terracota::vk
 
             if (physical_device.getSurfaceSupportKHR(current_idx, surface))
             {
-                queue_family_indices[qi::presentation] = current_idx;
+                queue_family_index[qi::presentation] = current_idx;
                 set[qi::presentation] = true;
 
                 selected = true;
@@ -33,7 +33,7 @@ namespace terracota::vk
 
             if (qfp.queueFlags & vk::QueueFlagBits::eCompute)
             {
-                queue_family_indices[qi::compute] = current_idx;
+                queue_family_index[qi::compute] = current_idx;
                 set[qi::compute] = true;
 
                 selected = true;
@@ -67,5 +67,15 @@ namespace terracota::vk
             .setPEnabledFeatures(&required_physical_device_features)
             .setPEnabledExtensionNames(required_extensions.native())
             .setQueueCreateInfos(queue_infos);
+    }
+
+    std::vector<uint32_t> device_info::queue_family_indices() const
+    {
+        std::vector<uint32_t> result;
+
+        for (auto& info : queue_infos)
+            result.push_back(info.queueFamilyIndex);
+
+        return result;
     }
 }

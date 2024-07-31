@@ -93,10 +93,13 @@ namespace terracota
         , physical_device{ pick_physical_device(instance) }
         , di{ physical_device, surface }
         , device{ physical_device, di.info }
-        , graphics_queue{ device, di.queue_family_indices[vk::queue_info_index::graphics], 0 }
-        , presentation_queue{ device, di.queue_family_indices[vk::queue_info_index::presentation], 0 }
-        , compute_queue{ device, di.queue_family_indices[vk::queue_info_index::compute], 0 }
-        , sci{ physical_device, surface, vk::Extent2D{ window.size().width, window.size().height } }
+        , graphics_queue{ device, di.queue_family_index[vk::queue_info_index::graphics], 0 }
+        , presentation_queue{ device, di.queue_family_index[vk::queue_info_index::presentation], 0 }
+        , compute_queue{ device, di.queue_family_index[vk::queue_info_index::compute], 0 }
+        , framebuffer_size{ cen::cast<uint32_t>(window.size()) }
+        , sci{ physical_device, surface, vk::swap_chain_info::params{
+                .framebuffer_size = vk::Extent2D{ framebuffer_size.width, framebuffer_size.height },
+                .queue_family_indices = di.queue_family_indices() } }
         , swap_chain{ device, sci.info }
     {
     }

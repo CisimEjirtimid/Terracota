@@ -20,6 +20,9 @@
     <Filter Include="Source Files\vk">
       <UniqueIdentifier>{6cd22398-84d5-45f1-9db2-e8c4c6aca614}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\cen">
+      <UniqueIdentifier>{4f375985-7bae-40fd-b359-e229f42a4240}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -59,6 +62,9 @@
     </ClInclude>
     <ClInclude Include="vk\swap_chain_info.h">
       <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="cen\utils.h">
+      <Filter>Header Files\cen</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

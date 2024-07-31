@@ -10,7 +10,7 @@ namespace terracota::vk
         std::vector<float> queue_priorities;
 
         // idx 0: graphics, idx 1: presentation, idx 2: compute
-        std::array<uint32_t, queue_info_index::count> queue_family_indices;
+        std::array<uint32_t, queue_info_index::count> queue_family_index;
 
         vk::PhysicalDeviceFeatures required_physical_device_features;
         vk::name_vector required_extensions;
@@ -18,5 +18,7 @@ namespace terracota::vk
         vk::DeviceCreateInfo info;
 
         device_info(vk::raii::PhysicalDevice& physical_device, vk::raii::SurfaceKHR& surface);
+
+        std::vector<uint32_t> queue_family_indices() const;
     };
 }

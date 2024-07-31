@@ -1,17 +1,6 @@
 #pragma once
 
-// SDL/Centurion init/include
-#define SDL_MAIN_HANDLED
-#define CENTURION_NO_SDL_IMAGE
-#define CENTURION_NO_SDL_MIXER
-#define CENTURION_NO_SDL_TTF
-#define CENTURION_NO_OPENGL
-
-// deprecation warning suppression
-#pragma warning(push)
-#pragma warning(disable:4996)
-#include <centurion/centurion.hpp>
-#pragma warning(pop)
+#include "cen/utils.h"
 
 #include "vk/instance_info.h"
 #include "vk/device_info.h"
@@ -44,6 +33,7 @@ namespace terracota
             vk::raii::Queue presentation_queue;
             vk::raii::Queue compute_queue;
 
+            cen::u32area framebuffer_size;
             vk::swap_chain_info sci;
             vk::raii::SwapchainKHR swap_chain;
 
