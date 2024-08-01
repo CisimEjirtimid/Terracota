@@ -102,6 +102,24 @@ namespace terracota
                 .queue_family_indices = di.queue_family_indices() } }
         , swap_chain{ device, sci.info }
     {
+        // template for all framebuffer image views
+        auto framebuffer_info = vk::ImageViewCreateInfo{}
+            .setViewType(vk::ImageViewType::e2D)
+            .setFormat(sci.info.imageFormat)
+            .setComponents(vk::ComponentMapping{}
+                .setR(vk::ComponentSwizzle::eIdentity)
+                .setG(vk::ComponentSwizzle::eIdentity)
+                .setB(vk::ComponentSwizzle::eIdentity)
+                .setA(vk::ComponentSwizzle::eIdentity))
+            .setSubresourceRange(vk::ImageSubresourceRange{}
+                .setAspectMask(vk::ImageAspectFlagBits::eColor)
+                .setBaseMipLevel(0)
+                .setLevelCount(1)
+                .setBaseArrayLayer(0)
+                .setLayerCount(1));
+
+        for (auto& framebuffer : swap_chain.getImages())
+            framebuffer_views.push_back(vk::raii::ImageView{ device, framebuffer_info.setImage(framebuffer) });
     }
 
     void application::loop()

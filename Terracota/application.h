@@ -36,6 +36,7 @@ namespace terracota
             cen::u32area framebuffer_size;
             vk::swap_chain_info sci;
             vk::raii::SwapchainKHR swap_chain;
+            std::vector<vk::raii::ImageView> framebuffer_views;
 
             v(cen::window& window, const vk::instance_info& params);
         } _vulkan;
