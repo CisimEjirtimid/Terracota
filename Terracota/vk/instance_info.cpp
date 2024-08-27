@@ -12,21 +12,26 @@ namespace terracota::vk
         vk::name_vector required_extensions{ *maybe_extensions };
         vk::name_vector available_extensions = vk::extensions();
 
-        extensions = required_extensions.intersect(available_extensions);
+        _extensions = required_extensions.intersect(available_extensions);
 
-        if (required_extensions.size() != extensions.size())
+        if (required_extensions.size() != _extensions.size())
             throw std::runtime_error{ "Required extensions not supported!" };
 
         // Use validation layers if this is a debug build
 #if defined(_DEBUG)
-        layers.push_back(std::string_view{ "VK_LAYER_KHRONOS_validation" });
+        _layers.push_back(std::string_view{ "VK_LAYER_KHRONOS_validation" });
 #endif
 
         // vk::InstanceCreateInfo is where the programmer specifies the layers and/or extensions that
         // are needed.
-        info = vk::InstanceCreateInfo()
+        _info = vk::InstanceCreateInfo()
             .setPApplicationInfo(&application_info)
-            .setPEnabledExtensionNames(extensions.native())
-            .setPEnabledLayerNames(layers.native());
+            .setPEnabledExtensionNames(_extensions.native())
+            .setPEnabledLayerNames(_layers.native());
+    }
+
+    const vk::InstanceCreateInfo& instance_info::operator()() const
+    {
+        return _info;
     }
 }

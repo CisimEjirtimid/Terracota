@@ -3,79 +3,24 @@
 
 namespace terracota::vk
 {
-    device_info::device_info(vk::raii::PhysicalDevice& physical_device, vk::raii::SurfaceKHR& surface)
+    device_info::device_info(vk::queue_infos& queue_infos)
+        : _queue_infos{ queue_infos }
     {
-        using qi = queue_info_index;
-
-        uint32_t current_idx = 0;
-
-        std::bitset<qi::count> set;
-
-        for (const auto& qfp : physical_device.getQueueFamilyProperties())
-        {
-            bool selected = false;
-
-            if (qfp.queueFlags & vk::QueueFlagBits::eGraphics)
-            {
-                queue_family_index[qi::graphics] = current_idx;
-                set[qi::graphics] = true;
-
-                selected = true;
-            }
-
-            if (physical_device.getSurfaceSupportKHR(current_idx, surface))
-            {
-                queue_family_index[qi::presentation] = current_idx;
-                set[qi::presentation] = true;
-
-                selected = true;
-            }
-
-            if (qfp.queueFlags & vk::QueueFlagBits::eCompute)
-            {
-                queue_family_index[qi::compute] = current_idx;
-                set[qi::compute] = true;
-
-                selected = true;
-            }
-
-            if (selected)
-            {
-                queue_priorities.push_back(1.f);
-
-                queue_infos.push_back(
-                    vk::DeviceQueueCreateInfo{}
-                        .setQueueFamilyIndex(current_idx)
-                        .setQueueCount(1)
-                        .setPQueuePriorities(&queue_priorities.back()));
-            }
-
-            if (set.all())
-                break;
-
-            current_idx++;
-        }
-
-        required_physical_device_features
+        _required_physical_device_features
             .setTessellationShader(true)
             .setShaderFloat64(true)
             .setGeometryShader(true);
 
-        required_extensions.push_back(std::string_view{ vk::KHRSwapchainExtensionName });
+        _required_extensions.push_back(std::string_view{ vk::KHRSwapchainExtensionName });
 
-        info = vk::DeviceCreateInfo()
-            .setPEnabledFeatures(&required_physical_device_features)
-            .setPEnabledExtensionNames(required_extensions.native())
-            .setQueueCreateInfos(queue_infos);
+        _info = vk::DeviceCreateInfo()
+            .setPEnabledFeatures(&_required_physical_device_features)
+            .setPEnabledExtensionNames(_required_extensions.native())
+            .setQueueCreateInfos(_queue_infos());
     }
 
-    std::vector<uint32_t> device_info::queue_family_indices() const
+    const vk::DeviceCreateInfo& device_info::operator()() const
     {
-        std::vector<uint32_t> result;
-
-        for (auto& info : queue_infos)
-            result.push_back(info.queueFamilyIndex);
-
-        return result;
+        return _info;
     }
 }

@@ -23,6 +23,12 @@
     <Filter Include="Header Files\cen">
       <UniqueIdentifier>{4f375985-7bae-40fd-b359-e229f42a4240}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{2daab696-4473-42fe-8645-6d73030dc7c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\cen">
+      <UniqueIdentifier>{76bb9c69-d782-4f43-8a43-aa0f361325d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -43,6 +49,21 @@
     <ClCompile Include="vk\swap_chain_info.cpp">
       <Filter>Source Files\vk</Filter>
     </ClCompile>
+    <ClCompile Include="cen\context.cpp">
+      <Filter>Source Files\cen</Filter>
+    </ClCompile>
+    <ClCompile Include="vk\context.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="vk\queues.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="vk\queue_infos.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="vk\swap_chain.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -57,7 +78,7 @@
     <ClInclude Include="vk\device_info.h">
       <Filter>Header Files\vk</Filter>
     </ClInclude>
-    <ClInclude Include="vk\queue_info_index.h">
+    <ClInclude Include="vk\queue_family.h">
       <Filter>Header Files\vk</Filter>
     </ClInclude>
     <ClInclude Include="vk\swap_chain_info.h">
@@ -66,5 +87,31 @@
     <ClInclude Include="cen\utils.h">
       <Filter>Header Files\cen</Filter>
     </ClInclude>
+    <ClInclude Include="shaders\utils.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="cen\context.h">
+      <Filter>Header Files\cen</Filter>
+    </ClInclude>
+    <ClInclude Include="vk\context.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="vk\queues.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="vk\queue_infos.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="vk\swap_chain.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <VulkanGLSLShader Include="shaders\shader.vert">
+      <Filter>Shaders</Filter>
+    </VulkanGLSLShader>
+    <VulkanGLSLShader Include="shaders\shader.frag">
+      <Filter>Shaders</Filter>
+    </VulkanGLSLShader>
   </ItemGroup>
 </Project>

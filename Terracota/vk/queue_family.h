@@ -1,8 +1,9 @@
 #pragma once
+#include <cstdint>
 
 namespace terracota::vk
 {
-    enum queue_info_index : uint8_t
+    enum queue_family : uint8_t
     {
         graphics = 0,
         presentation,

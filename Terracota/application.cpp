@@ -8,118 +8,55 @@
 #include <iostream>
 #include <execution>
 #include <type_traits>
+#include <array>
+
+#include "shaders/utils.h"
 
 namespace terracota
 {
-    // TODO: customization options for `application_info` and `instance_info` functions
     namespace
     {
-        vk::ApplicationInfo application_info(const std::string& title)
+        vk::Extent2D window_extent(const cen::window& window)
         {
-            // vk::ApplicationInfo allows the programmer to specifiy some basic information about the
-            // program, which can be useful for layers and tools to provide more debug information.
-            return vk::ApplicationInfo()
-                .setPApplicationName(title.c_str())
-                .setApplicationVersion(1)
-                .setPEngineName("Terracota Rendering Engine")
-                .setEngineVersion(1)
-                .setApiVersion(VK_API_VERSION_1_0);
-        }
+            auto size = cen::cast<uint32_t>(window.size());
 
-        // Create a Vulkan surface for rendering
-        VkSurfaceKHR raw_surface(cen::window& window, vk::raii::Instance& instance)
-        {
-            VkSurfaceKHR raw;
-            cen::vk::make_surface(window, *instance, &raw);
-            return std::move(raw);
-        }
-
-        vk::raii::PhysicalDevice pick_physical_device(vk::raii::Instance& instance)
-        {
-            auto valid = [](vk::raii::PhysicalDevice& physical_device)
-            {
-                auto properties = physical_device.getProperties();
-                auto features = physical_device.getFeatures();
-
-                auto qfps = physical_device.getQueueFamilyProperties();
-
-                auto queue_flag_predicate = [](vk::QueueFlagBits flag_bit)
-                {
-                    return [flag_bit](vk::QueueFamilyProperties& qfp) -> bool
-                    {
-                        return bool(qfp.queueFlags & flag_bit);
-                    };
-                };
-
-                using flag_predicate = std::invoke_result_t<decltype(queue_flag_predicate), vk::QueueFlagBits>;
-
-                auto exists_queue = [](std::vector<vk::QueueFamilyProperties>& qfps, flag_predicate&& predicate)
-                {
-                    return std::find_if(std::execution::par, qfps.begin(), qfps.end(), predicate) != qfps.end();
-                };
-
-                auto graphics_queue = exists_queue(qfps, queue_flag_predicate(vk::QueueFlagBits::eGraphics));
-                auto compute_queue = exists_queue(qfps, queue_flag_predicate(vk::QueueFlagBits::eCompute));
-
-                // TODO: make these requirements configurable somehow
-                return properties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu
-                    && features.shaderFloat64 // bools are uint32_t
-                    && features.tessellationShader
-                    && features.geometryShader
-                    && graphics_queue && compute_queue; // these are proper bool
-            };
-
-            for (auto& physical_device : vk::raii::PhysicalDevices{ instance })
-                if (valid(physical_device))
-                    return physical_device;
-
-            throw std::runtime_error{ "No valid physical device found!" };
+            return vk::Extent2D{ size.width, size.height };
         }
     }
 
-    application::c::c(const std::string& title, const cen::iarea& size)
-        : context{ cen::sdl_cfg{ SDL_INIT_VIDEO } }
-        , window{
-            title.c_str(),
-            size,
-            cen::window::window_flags::vulkan
-        }
+    application::v::v(const cen::window& window, vk::context& context)
+        : context{ context }
+        , queues{ context }
+        , swap_chain{ context, window_extent(window) }
     {
-    }
+        // TODO: move to pipeline.h/.cpp
+        auto vertex_shader = shaders::read("shaders/shader.vert.spv");
+        auto fragment_shader = shaders::read("shaders/shader.frag.spv");
+        vk::raii::ShaderModule vertex_shader_module{ context.device, vk::ShaderModuleCreateInfo{}.setCode(vertex_shader) };
+        vk::raii::ShaderModule fragment_shader_module{ context.device, vk::ShaderModuleCreateInfo{}.setCode(fragment_shader) };
 
-    application::v::v(cen::window& window, const vk::instance_info& ii)
-        : instance{ context, ii.info }
-        , surface{ instance, raw_surface(window, instance) }
-        , physical_device{ pick_physical_device(instance) }
-        , di{ physical_device, surface }
-        , device{ physical_device, di.info }
-        , graphics_queue{ device, di.queue_family_index[vk::queue_info_index::graphics], 0 }
-        , presentation_queue{ device, di.queue_family_index[vk::queue_info_index::presentation], 0 }
-        , compute_queue{ device, di.queue_family_index[vk::queue_info_index::compute], 0 }
-        , framebuffer_size{ cen::cast<uint32_t>(window.size()) }
-        , sci{ physical_device, surface, vk::swap_chain_info::params{
-                .framebuffer_size = vk::Extent2D{ framebuffer_size.width, framebuffer_size.height },
-                .queue_family_indices = di.queue_family_indices() } }
-        , swap_chain{ device, sci.info }
-    {
-        // template for all framebuffer image views
-        auto framebuffer_info = vk::ImageViewCreateInfo{}
-            .setViewType(vk::ImageViewType::e2D)
-            .setFormat(sci.info.imageFormat)
-            .setComponents(vk::ComponentMapping{}
-                .setR(vk::ComponentSwizzle::eIdentity)
-                .setG(vk::ComponentSwizzle::eIdentity)
-                .setB(vk::ComponentSwizzle::eIdentity)
-                .setA(vk::ComponentSwizzle::eIdentity))
-            .setSubresourceRange(vk::ImageSubresourceRange{}
-                .setAspectMask(vk::ImageAspectFlagBits::eColor)
-                .setBaseMipLevel(0)
-                .setLevelCount(1)
-                .setBaseArrayLayer(0)
-                .setLayerCount(1));
+        //std::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages_info{
+        //    vk::PipelineShaderStageCreateInfo{}
+        //        .setStage(vk::ShaderStageFlagBits::eVertex)
+        //        .setModule(vertex_shader_module)
+        //        .setPName("main"),
+        //        vk::PipelineShaderStageCreateInfo{}
+        //        .setStage(vk::ShaderStageFlagBits::eFragment)
+        //        .setModule(fragment_shader_module)
+        //        .setPName("main")
+        //};
 
-        for (auto& framebuffer : swap_chain.getImages())
-            framebuffer_views.push_back(vk::raii::ImageView{ device, framebuffer_info.setImage(framebuffer) });
+        //std::array<vk::DynamicState, 2> dynamic_states{
+        //    vk::DynamicState::eViewport,
+        //    vk::DynamicState::eScissor
+        //};
+        //auto dynamic_state_info = vk::PipelineDynamicStateCreateInfo{}
+        //    .setDynamicStates(dynamic_states);
+
+        //vk::raii::Pipeline pipeline{ context.device, nullptr,
+        //    vk::GraphicsPipelineCreateInfo{}
+        //        .setStages(shader_stages_info)
+        //        .setPDynamicState(&dynamic_state_info)};
     }
 
     void application::loop()
@@ -144,15 +81,9 @@ namespace terracota
         }
     }
 
-    application::application()
-        : _centurion{ "Terracota", cen::iarea{ 1280, 720 } }
-        , _vulkan{
-            _centurion.window,
-            vk::instance_info{
-                application_info("Terracota"),
-                cen::vk::required_extensions()
-            }
-        }
+    application::application(cen::context& centurion, vk::context& vk)
+        : _centurion(centurion)
+        , _vulkan{ _centurion.window, vk }
     {
         // This is where rest of initializtion for a program should be performed
 

@@ -38,3 +38,9 @@
 # Build collaterals - update as we add other projects to solution
 x64/*
 Terracota/x64/*
+
+# Vcpkg packages
+packages/*
+
+# Shaders SPIR-V files
+Terracota/shaders/*.spv 

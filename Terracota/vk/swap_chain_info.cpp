@@ -55,25 +55,30 @@ namespace terracota::vk
         vk::raii::PhysicalDevice& physical_device,
         vk::raii::SurfaceKHR& surface,
         const params& p)
-        : surface_capabilities(physical_device.getSurfaceCapabilitiesKHR(surface))
-        , surface_formats(physical_device.getSurfaceFormatsKHR(surface))
-        , present_modes(physical_device.getSurfacePresentModesKHR(surface))
-        , queue_family_indices(p.queue_family_indices)
+        : _surface_capabilities(physical_device.getSurfaceCapabilitiesKHR(surface))
+        , _surface_formats(physical_device.getSurfaceFormatsKHR(surface))
+        , _present_modes(physical_device.getSurfacePresentModesKHR(surface))
+        , _queue_family_indices(p.queue_family_indices)
     {
-        auto surface_format = pick_surface_format(surface_formats);
+        auto surface_format = pick_surface_format(_surface_formats);
 
-        info
+        _info
             .setSurface(surface)
-            .setMinImageCount(min_image_count(surface_capabilities))
+            .setMinImageCount(min_image_count(_surface_capabilities))
             .setImageFormat(surface_format.format)
             .setImageColorSpace(surface_format.colorSpace)
-            .setImageExtent(pick_extent(surface_capabilities, p.framebuffer_size))
+            .setImageExtent(pick_extent(_surface_capabilities, p.framebuffer_size))
             .setImageArrayLayers(1)
             .setImageUsage(vk::ImageUsageFlagBits::eColorAttachment)
-            .setQueueFamilyIndices(queue_family_indices)
+            .setQueueFamilyIndices(_queue_family_indices)
             .setImageSharingMode(
-                queue_family_indices.size() != 1
+                _queue_family_indices.size() != 1
                 ? vk::SharingMode::eConcurrent
                 : vk::SharingMode::eExclusive);
+    }
+
+    const vk::SwapchainCreateInfoKHR& swap_chain_info::operator()() const
+    {
+        return _info;
     }
 }

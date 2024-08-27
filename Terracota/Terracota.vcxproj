@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (c) 2015-2019 LunarG, Inc. -->
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -23,6 +24,7 @@
     <ProjectGuid>{5b075bcd-4dd3-4aa8-8b96-ca29a1215064}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Terracota</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -103,9 +105,10 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\tools;$(SolutionDir)\thirdparty;$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Terracota;$(SolutionDir)\thirdparty;$(SolutionDir)\tools;$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -145,9 +148,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\tools;$(SolutionDir)\thirdparty;$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Terracota;$(SolutionDir)\thirdparty;$(SolutionDir)\tools;$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -161,33 +165,54 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp" />
+    <ClCompile Include="cen\context.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="vk\context.cpp" />
     <ClCompile Include="vk\instance_info.cpp" />
     <ClCompile Include="vk\device_info.cpp" />
+    <ClCompile Include="vk\queues.cpp" />
+    <ClCompile Include="vk\queue_infos.cpp" />
+    <ClCompile Include="vk\swap_chain.cpp" />
     <ClCompile Include="vk\swap_chain_info.cpp" />
     <ClCompile Include="vk\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
+    <ClInclude Include="cen\context.h" />
     <ClInclude Include="cen\utils.h" />
+    <ClInclude Include="shaders\utils.h" />
+    <ClInclude Include="vk\context.h" />
     <ClInclude Include="vk\instance_info.h" />
     <ClInclude Include="vk\device_info.h" />
-    <ClInclude Include="vk\queue_info_index.h" />
+    <ClInclude Include="vk\queues.h" />
+    <ClInclude Include="vk\queue_infos.h" />
+    <ClInclude Include="vk\queue_family.h" />
+    <ClInclude Include="vk\swap_chain.h" />
     <ClInclude Include="vk\swap_chain_info.h" />
     <ClInclude Include="vk\utils.h" />
   </ItemGroup>
+  <ItemGroup>
+    <VulkanGLSLShader Include="shaders\shader.frag" />
+    <VulkanGLSLShader Include="shaders\shader.vert">
+      <FileType>Document</FileType>
+    </VulkanGLSLShader>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets')" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\VulkanGLSLShaderCompiler.targets" />
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerEnvironment>PATH=$(VULKAN_SDK)\Bin
 $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LocalDebuggerEnvironment>PATH=$(VULKAN_SDK)\Bin
 $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LocalDebuggerEnvironment>PATH=$(VULKAN_SDK)\Bin32
@@ -202,4 +227,11 @@ $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
   </PropertyGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+  </Target>
 </Project>
