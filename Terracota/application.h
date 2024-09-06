@@ -4,6 +4,7 @@
 #include "vk/context.h"
 #include "vk/queues.h"
 #include "vk/swap_chain.h"
+#include "vk/pipeline.h"
 
 namespace terracota
 {
@@ -17,6 +18,8 @@ namespace terracota
 
             vk::queues queues;
             vk::swap_chain swap_chain;
+
+            vk::pipeline pipeline;
 
             v(const cen::window& window, vk::context& context);
         } _vulkan;

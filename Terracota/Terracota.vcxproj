@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (c) 2015-2019 LunarG, Inc. -->
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props')" />
@@ -170,6 +170,7 @@
     <ClCompile Include="vk\context.cpp" />
     <ClCompile Include="vk\instance_info.cpp" />
     <ClCompile Include="vk\device_info.cpp" />
+    <ClCompile Include="vk\pipeline.cpp" />
     <ClCompile Include="vk\queues.cpp" />
     <ClCompile Include="vk\queue_infos.cpp" />
     <ClCompile Include="vk\swap_chain.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="vk\context.h" />
     <ClInclude Include="vk\instance_info.h" />
     <ClInclude Include="vk\device_info.h" />
+    <ClInclude Include="vk\pipeline.h" />
     <ClInclude Include="vk\queues.h" />
     <ClInclude Include="vk\queue_infos.h" />
     <ClInclude Include="vk\queue_family.h" />

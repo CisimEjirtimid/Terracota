@@ -10,8 +10,6 @@
 #include <type_traits>
 #include <array>
 
-#include "shaders/utils.h"
-
 namespace terracota
 {
     namespace
@@ -28,35 +26,8 @@ namespace terracota
         : context{ context }
         , queues{ context }
         , swap_chain{ context, window_extent(window) }
+        , pipeline{ context.device, window_extent(window) }
     {
-        // TODO: move to pipeline.h/.cpp
-        auto vertex_shader = shaders::read("shaders/shader.vert.spv");
-        auto fragment_shader = shaders::read("shaders/shader.frag.spv");
-        vk::raii::ShaderModule vertex_shader_module{ context.device, vk::ShaderModuleCreateInfo{}.setCode(vertex_shader) };
-        vk::raii::ShaderModule fragment_shader_module{ context.device, vk::ShaderModuleCreateInfo{}.setCode(fragment_shader) };
-
-        //std::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages_info{
-        //    vk::PipelineShaderStageCreateInfo{}
-        //        .setStage(vk::ShaderStageFlagBits::eVertex)
-        //        .setModule(vertex_shader_module)
-        //        .setPName("main"),
-        //        vk::PipelineShaderStageCreateInfo{}
-        //        .setStage(vk::ShaderStageFlagBits::eFragment)
-        //        .setModule(fragment_shader_module)
-        //        .setPName("main")
-        //};
-
-        //std::array<vk::DynamicState, 2> dynamic_states{
-        //    vk::DynamicState::eViewport,
-        //    vk::DynamicState::eScissor
-        //};
-        //auto dynamic_state_info = vk::PipelineDynamicStateCreateInfo{}
-        //    .setDynamicStates(dynamic_states);
-
-        //vk::raii::Pipeline pipeline{ context.device, nullptr,
-        //    vk::GraphicsPipelineCreateInfo{}
-        //        .setStages(shader_stages_info)
-        //        .setPDynamicState(&dynamic_state_info)};
     }
 
     void application::loop()
