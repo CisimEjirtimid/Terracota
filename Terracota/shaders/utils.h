@@ -5,7 +5,13 @@
 
 namespace shaders
 {
-    inline std::vector<uint32_t> read(const std::string& filename)
+    struct descriptor
+    {
+        std::vector<uint32_t> code;
+        std::string entrypoint{ "main" };
+    };
+
+    inline descriptor read(const std::string& filename)
     {
         std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
@@ -18,6 +24,6 @@ namespace shaders
         file.seekg(0);
         file.read(reinterpret_cast<char*>(buffer.data()), size);
 
-        return buffer;
+        return { buffer }; // TODO: entrypoint can be something other than default `main`
     }
 }

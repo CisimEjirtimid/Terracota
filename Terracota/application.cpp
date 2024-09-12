@@ -26,7 +26,17 @@ namespace terracota
         : context{ context }
         , queues{ context }
         , swap_chain{ context, window_extent(window) }
-        , pipeline{ context.device, window_extent(window) }
+        , pipeline{ context.device,
+            vk::pipeline::params{
+                window_extent(window),
+                vk::PrimitiveTopology::eTriangleList,
+                vk::PolygonMode::eFill,
+                {
+                    { vk::ShaderStageFlagBits::eVertex, shaders::read("shaders/shader.vert.spv") },
+                    { vk::ShaderStageFlagBits::eFragment, shaders::read("shaders/shader.frag.spv") },
+                }
+            }
+        }
     {
     }
 

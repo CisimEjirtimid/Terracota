@@ -173,9 +173,11 @@
     <ClCompile Include="vk\pipeline.cpp" />
     <ClCompile Include="vk\queues.cpp" />
     <ClCompile Include="vk\queue_infos.cpp" />
+    <ClCompile Include="vk\shader_stages_info.cpp" />
     <ClCompile Include="vk\swap_chain.cpp" />
     <ClCompile Include="vk\swap_chain_info.cpp" />
     <ClCompile Include="vk\utils.cpp" />
+    <ClCompile Include="vk\viewport_info.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
@@ -189,9 +191,11 @@
     <ClInclude Include="vk\queues.h" />
     <ClInclude Include="vk\queue_infos.h" />
     <ClInclude Include="vk\queue_family.h" />
+    <ClInclude Include="vk\shader_stages_info.h" />
     <ClInclude Include="vk\swap_chain.h" />
     <ClInclude Include="vk\swap_chain_info.h" />
     <ClInclude Include="vk\utils.h" />
+    <ClInclude Include="vk\viewport_info.h" />
   </ItemGroup>
   <ItemGroup>
     <VulkanGLSLShader Include="shaders\shader.frag" />
