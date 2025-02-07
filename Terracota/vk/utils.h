@@ -2,6 +2,8 @@
 
 // Vulkan init/include
 #define VK_USE_PLATFORM_WIN32_KHR // Enable the WSI extensions
+#define VULKAN_HPP_NO_CONSTRUCTORS
+#define VULKAN_HPP_USE_REFLECT
 #define NOMINMAX
 #include <vulkan/vulkan_raii.hpp>
 

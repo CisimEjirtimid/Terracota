@@ -1,7 +1,6 @@
 #include "context.h"
 #include "cen/utils.h"
 
-#include <execution>
 #include "context.h"
 
 namespace terracota::vk
@@ -13,64 +12,103 @@ namespace terracota::vk
         {
             VkSurfaceKHR raw;
             cen::vk::make_surface(window, *instance, &raw);
-            return std::move(raw);
+            return raw;
         }
 
-        vk::raii::PhysicalDevice pick_physical_device(vk::raii::Instance& instance)
+        struct physical_device_requirements
         {
-            auto valid = [](vk::raii::PhysicalDevice& physical_device)
-                {
-                    auto properties = physical_device.getProperties();
-                    auto features = physical_device.getFeatures();
+            magic_enum::containers::bitset<queue_family> queues;
 
-                    auto qfps = physical_device.getQueueFamilyProperties();
+            std::optional<vk::PhysicalDeviceType> device_type;
+            std::optional<uint32_t> api_version;
 
-                    auto queue_flag_predicate = [](vk::QueueFlagBits flag_bit)
-                        {
-                            return [flag_bit](vk::QueueFamilyProperties& qfp) -> bool
-                                {
-                                    return bool(qfp.queueFlags & flag_bit);
-                                };
-                        };
+            vk::PhysicalDeviceFeatures features10;
+            vk::PhysicalDeviceVulkan11Features features11;
+            vk::PhysicalDeviceVulkan12Features features12;
+            vk::PhysicalDeviceVulkan13Features features13;
+        };
 
-                    using flag_predicate = std::invoke_result_t<decltype(queue_flag_predicate), vk::QueueFlagBits>;
+        struct physical_device_selector
+        {
+            vk::raii::SurfaceKHR& surface;
 
-                    auto exists_queue = [](std::vector<vk::QueueFamilyProperties>& qfps, flag_predicate&& predicate)
-                        {
-                            return std::find_if(std::execution::par, qfps.begin(), qfps.end(), predicate) != qfps.end();
-                        };
+            physical_device_requirements requirements;
 
-                    auto graphics_queue = exists_queue(qfps, queue_flag_predicate(vk::QueueFlagBits::eGraphics));
-                    auto compute_queue = exists_queue(qfps, queue_flag_predicate(vk::QueueFlagBits::eCompute));
+            bool supports_features(concepts::physical_device_features auto requested, concepts::physical_device_features auto available)
+            {
+                auto requested_tuple = cisim::tuple::of_types<vk::Bool32>(requested.reflect());
+                auto available_tuple = cisim::tuple::of_types<vk::Bool32>(available.reflect());
 
-                    // TODO: make these requirements configurable somehow
-                    // predicate = std::function<bool(const vk::raii::PhysicalDevice&)> or
-                    // predicate = std::function<bool(
-                    //                  const vk::PhysicalDeviceProperties&,
-                    //                  const vk::PhysicalDeviceFeatures&,
-                    //                  const std::vector<QueueFamilyProperties>&)>
-                    return properties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu
-                        && features.shaderFloat64 // bools are uint32_t
-                        && features.tessellationShader
-                        && features.geometryShader
-                        && graphics_queue && compute_queue; // these are proper bool
-                };
+                return cisim::tuple::is_subset(requested_tuple, available_tuple);
+            }
 
-            for (auto& physical_device : vk::raii::PhysicalDevices{ instance })
-                if (valid(physical_device))
-                    return physical_device;
+            bool appropriate(vk::raii::PhysicalDevice& physical_device)
+            {
+                queue_infos available_queues{ physical_device, surface };
 
-            throw std::runtime_error{ "No valid physical device found!" };
-        }
+                auto properties = physical_device.getProperties();
+                auto features2 = physical_device.getFeatures2<
+                    vk::PhysicalDeviceFeatures2,
+                    vk::PhysicalDeviceVulkan11Features,
+                    vk::PhysicalDeviceVulkan12Features,
+                    vk::PhysicalDeviceVulkan13Features>();
+
+                // check if required queues is subset of available queues
+                if ((available_queues.family_set() & requirements.queues) != requirements.queues)
+                    return false;
+
+                if (requirements.api_version && requirements.api_version > properties.apiVersion)
+                    return false;
+
+                if (requirements.device_type && requirements.device_type != properties.deviceType)
+                    return false;
+
+                return supports_features(requirements.features10, features2.get<vk::PhysicalDeviceFeatures2>().features)
+                    && supports_features(requirements.features11, features2.get<vk::PhysicalDeviceVulkan11Features>())
+                    && supports_features(requirements.features12, features2.get<vk::PhysicalDeviceVulkan12Features>())
+                    && supports_features(requirements.features13, features2.get<vk::PhysicalDeviceVulkan13Features>());
+            }
+
+            vk::raii::PhysicalDevice pick(vk::raii::PhysicalDevices physical_devices)
+            {
+                for (auto& physical_device : physical_devices)
+                    if (appropriate(physical_device))
+                        return physical_device;
+
+                throw std::runtime_error{ "No appropriate physical device detected!" };
+            }
+        };
     }
 
     context::context(cen::window& window, const vk::instance_info& ii)
         : instance{ raii_context, ii() }
         , surface{ instance, raw_surface(window, instance) }
-        , physical_device{ pick_physical_device(instance) }
+        , physical_device{
+            physical_device_selector{
+                .surface = surface,
+                .requirements = physical_device_requirements{
+                    .queues = {
+                        queue_family::graphics,
+                        queue_family::presentation
+                    },
+                    .device_type = vk::PhysicalDeviceType::eDiscreteGpu,
+                    .api_version = ii().pApplicationInfo->apiVersion,
+                    .features10 = vk::PhysicalDeviceFeatures{
+                        .geometryShader = true,
+                        .tessellationShader = true,
+                        .shaderFloat64 = true,
+                    }
+                },
+            }.pick(vk::raii::PhysicalDevices{ instance }) }
         , qi{ physical_device, surface }
         , di{ qi }
         , device{ physical_device, di() }
+        // TODO: move to `vk::commands`
+        , command_pool{ device, vk::CommandPoolCreateInfo{
+            .flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
+            .queueFamilyIndex = qi.family_index(vk::queue_family::graphics)
+        } }
+        , command_buffers{ device, vk::CommandBufferAllocateInfo{} }
     {
     }
 }

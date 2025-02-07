@@ -1,5 +1,5 @@
 #include "queue_infos.h"
-#include <bitset>
+#include <execution>
 
 namespace terracota::vk
 {
@@ -14,44 +14,36 @@ namespace terracota::vk
 
         uint32_t current_idx = 0;
 
-        std::bitset<qf::count> set;
-
         for (const auto& qfp : physical_device.getQueueFamilyProperties())
         {
             bool selected = false;
 
-            if (qfp.queueFlags & vk::QueueFlagBits::eGraphics)
-            {
-                _family_indices[qf::graphics] = current_idx;
-                set[qf::graphics] = true;
+            auto set = [this, &selected, &current_idx](auto queue_family)
+                {
+                    _family_indices[queue_family] = current_idx;
+                    _family_set[queue_family] = true;
 
-                selected = true;
-            }
+                    selected = true;
+                };
+
+            if (qfp.queueFlags & vk::QueueFlagBits::eGraphics)
+                set(queue_family::graphics);
 
             if (physical_device.getSurfaceSupportKHR(current_idx, surface))
-            {
-                _family_indices[qf::presentation] = current_idx;
-                set[qf::presentation] = true;
-
-                selected = true;
-            }
+                set(queue_family::presentation);
 
             if (qfp.queueFlags & vk::QueueFlagBits::eCompute)
-            {
-                _family_indices[qf::compute] = current_idx;
-                set[qf::compute] = true;
-
-                selected = true;
-            }
+                set(qf::compute);
 
             if (selected)
                 _infos.push_back(
-                    vk::DeviceQueueCreateInfo{}
-                    .setQueueFamilyIndex(current_idx)
-                    .setQueueCount(1)
-                    .setPQueuePriorities(&default_priority));
+                    vk::DeviceQueueCreateInfo{
+                        .queueFamilyIndex = current_idx,
+                        .queueCount = 1,
+                        .pQueuePriorities = &default_priority
+                    });
 
-            if (set.all())
+            if (_family_set.all())
                 break;
 
             current_idx++;
@@ -76,5 +68,9 @@ namespace terracota::vk
             result.push_back(info.queueFamilyIndex);
 
         return result;
+    }
+    magic_enum::containers::bitset<queue_family> queue_infos::family_set() const
+    {
+        return _family_set;
     }
 }

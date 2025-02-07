@@ -14,12 +14,13 @@ namespace
     {
         // vk::ApplicationInfo allows the programmer to specifiy some basic information about the
         // program, which can be useful for layers and tools to provide more debug information.
-        return vk::ApplicationInfo()
-            .setPApplicationName(title.c_str())
-            .setApplicationVersion(1)
-            .setPEngineName("Terracota Rendering Engine")
-            .setEngineVersion(1)
-            .setApiVersion(VK_API_VERSION_1_0);
+        return vk::ApplicationInfo{
+            .pApplicationName = title.c_str(),
+            .applicationVersion = 1,
+            .pEngineName = "Terracota Rendering Engine",
+            .engineVersion = 1,
+            .apiVersion = vk::ApiVersion13,
+        };
     }
 }
 

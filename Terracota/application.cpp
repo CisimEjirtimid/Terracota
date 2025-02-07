@@ -26,7 +26,7 @@ namespace terracota
         : context{ context }
         , queues{ context }
         , swap_chain{ context, window_extent(window) }
-        , pipeline{ context.device,
+        , pipeline{ context.device, swap_chain,
             vk::pipeline::params{
                 window_extent(window),
                 vk::PrimitiveTopology::eTriangleList,

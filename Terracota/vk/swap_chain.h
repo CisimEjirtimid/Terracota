@@ -13,6 +13,8 @@ namespace terracota::vk
     public:
         swap_chain(context& context, const Extent2D& framebuffer_size);
 
+        const vk::swap_chain_info& info() const;
+
         std::vector<vk::raii::ImageView>& framebuffer_views();
     };
 }

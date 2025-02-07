@@ -32,6 +32,11 @@ namespace terracota::vk
             _framebuffer_views.push_back(vk::raii::ImageView{ context.device, framebuffer_info.setImage(framebuffer) });
     }
 
+    const vk::swap_chain_info& swap_chain::info() const
+    {
+        return _info;
+    }
+
     std::vector<vk::raii::ImageView>& swap_chain::framebuffer_views()
     {
         return _framebuffer_views;
