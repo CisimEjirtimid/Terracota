@@ -5,6 +5,7 @@ namespace terracota::vk
 {
     class instance_info
     {
+        // Instance extensions TODO: parametrize?
         vk::name_vector _extensions;
         vk::name_vector _layers;
 

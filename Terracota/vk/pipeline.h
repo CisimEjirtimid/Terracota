@@ -11,22 +11,22 @@ namespace terracota::vk
         shader_stages_info _ssi;
         viewport_info _vpi;
 
-        vk::raii::RenderPass _render_pass;
-        vk::raii::Pipeline _pipeline;
-        vk::raii::PipelineLayout _layout;
+        raii::RenderPass _render_pass;
+        raii::Pipeline _pipeline;
+        raii::PipelineLayout _layout;
 
-        std::vector<vk::raii::Framebuffer> _framebuffers;
+        std::vector<raii::Framebuffer> _framebuffers;
 
     public:
         struct params
         {
-            vk::Extent2D extent;
-            vk::PrimitiveTopology topology;
-            vk::PolygonMode polygon_mode;
+            Extent2D extent;
+            PrimitiveTopology topology;
+            PolygonMode polygon_mode;
 
-            std::map<vk::ShaderStageFlagBits, shaders::descriptor> shaders;
+            std::map<ShaderStageFlagBits, shaders::descriptor> shaders;
         };
 
-        pipeline(vk::raii::Device& device, vk::swap_chain& swap_chain, const params& params);
+        pipeline(raii::Device& device, swap_chain& swap_chain, const params& params);
     };
 }

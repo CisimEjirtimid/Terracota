@@ -21,7 +21,8 @@ namespace terracota::vk
     public:
         name_vector() = default;
         name_vector(const name_vector&) = default;
-        name_vector(std::vector<const char*>& other);
+        name_vector(const std::vector<const char*>& other);
+        name_vector(const std::initializer_list<const char*>& initializer_list);
 
         std::vector<const char*>& native();
 
@@ -32,5 +33,5 @@ namespace terracota::vk
 
     name_vector layers();
 
-    bool valid(vk::Extent2D& extent);
+    bool valid(Extent2D& extent);
 }

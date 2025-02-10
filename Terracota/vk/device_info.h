@@ -1,21 +1,24 @@
 #pragma once
 #include "utils.h"
 #include "queue_infos.h"
+#include "physical_device_selector.h"
 
 namespace terracota::vk
 {
     struct device_info
     {
-        vk::queue_infos& _queue_infos;
+        // Device extensions TODO: parametrize?
+        name_vector _extensions;
 
-        vk::PhysicalDeviceFeatures _required_physical_device_features;
-        vk::name_vector _required_extensions;
-
-        vk::DeviceCreateInfo _info;
+        StructureChain<
+            DeviceCreateInfo,
+            PhysicalDeviceVulkan11Features,
+            PhysicalDeviceVulkan12Features,
+            PhysicalDeviceVulkan13Features> _info;
 
     public:
-        device_info(vk::queue_infos& queue_infos);
+        device_info(const queue_infos& queue_infos, const required_features& features);
 
-        const vk::DeviceCreateInfo& operator()() const;
+        const DeviceCreateInfo& operator()() const;
     };
 }

@@ -2,15 +2,15 @@
 
 namespace terracota::vk
 {
-    instance_info::instance_info(const vk::ApplicationInfo& application_info, std::optional<std::vector<const char*>> maybe_extensions)
+    instance_info::instance_info(const ApplicationInfo& application_info, std::optional<std::vector<const char*>> maybe_extensions)
     {
         // Get WSI extensions from SDL (we can add more if we like - we just can't remove these)
 
         if (!maybe_extensions)
             throw std::runtime_error{ "No Vulkan extensions!" };
 
-        vk::name_vector required_extensions{ *maybe_extensions };
-        vk::name_vector available_extensions = vk::extensions();
+        name_vector required_extensions{ *maybe_extensions };
+        name_vector available_extensions = extensions();
 
         _extensions = required_extensions.intersect(available_extensions);
 
@@ -22,15 +22,15 @@ namespace terracota::vk
         _layers.push_back(std::string_view{ "VK_LAYER_KHRONOS_validation" });
 #endif
 
-        // vk::InstanceCreateInfo is where the programmer specifies the layers and/or extensions that
+        // InstanceCreateInfo is where the programmer specifies the layers and/or extensions that
         // are needed.
-        _info = vk::InstanceCreateInfo()
+        _info = InstanceCreateInfo()
             .setPApplicationInfo(&application_info)
             .setPEnabledExtensionNames(_extensions.native())
             .setPEnabledLayerNames(_layers.native());
     }
 
-    const vk::InstanceCreateInfo& instance_info::operator()() const
+    const InstanceCreateInfo& instance_info::operator()() const
     {
         return _info;
     }

@@ -7,62 +7,62 @@ namespace terracota::vk
     {
         static constexpr auto dynamic_state_array = std::array
         {
-            vk::DynamicState::eViewport,
-            vk::DynamicState::eScissor
+            DynamicState::eViewport,
+            DynamicState::eScissor
         };
 
-        static constexpr auto color_blend_attachment = vk::PipelineColorBlendAttachmentState{
+        static constexpr auto color_blend_attachment = PipelineColorBlendAttachmentState{
             .blendEnable = true,
-            .srcColorBlendFactor = vk::BlendFactor::eSrcAlpha,
-            .dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha,
-            .colorBlendOp = vk::BlendOp::eAdd,
-            .srcAlphaBlendFactor = vk::BlendFactor::eOne,
-            .dstAlphaBlendFactor = vk::BlendFactor::eZero,
-            .alphaBlendOp = vk::BlendOp::eAdd,
+            .srcColorBlendFactor = BlendFactor::eSrcAlpha,
+            .dstColorBlendFactor = BlendFactor::eOneMinusSrcAlpha,
+            .colorBlendOp = BlendOp::eAdd,
+            .srcAlphaBlendFactor = BlendFactor::eOne,
+            .dstAlphaBlendFactor = BlendFactor::eZero,
+            .alphaBlendOp = BlendOp::eAdd,
             .colorWriteMask =
-                vk::ColorComponentFlagBits::eR |
-                vk::ColorComponentFlagBits::eG |
-                vk::ColorComponentFlagBits::eB |
-                vk::ColorComponentFlagBits::eA,
+                ColorComponentFlagBits::eR |
+                ColorComponentFlagBits::eG |
+                ColorComponentFlagBits::eB |
+                ColorComponentFlagBits::eA,
         };
     }
 
     namespace info
     {
-        vk::PipelineDynamicStateCreateInfo& dynamic()
+        PipelineDynamicStateCreateInfo& dynamic()
         {
-            static auto info = vk::PipelineDynamicStateCreateInfo{}
+            static auto info = PipelineDynamicStateCreateInfo{}
                 .setDynamicStates(dynamic_state_array);
 
             return info;
         }
 
-        vk::PipelineVertexInputStateCreateInfo& vertex_input()
+        PipelineVertexInputStateCreateInfo& vertex_input()
         {
-            static auto info = vk::PipelineVertexInputStateCreateInfo{}
+            static auto info = PipelineVertexInputStateCreateInfo{}
                 .setVertexBindingDescriptions({})
                 .setVertexAttributeDescriptions({});
 
             return info;
         }
 
-        vk::PipelineInputAssemblyStateCreateInfo& input_assembly(const vk::PrimitiveTopology& topology)
+        PipelineInputAssemblyStateCreateInfo& input_assembly(const PrimitiveTopology& topology)
         {
-            static auto info = vk::PipelineInputAssemblyStateCreateInfo{
+            static auto info = PipelineInputAssemblyStateCreateInfo{
                 .primitiveRestartEnable = false };
 
             return info.setTopology(topology);
         }
 
-        vk::PipelineRasterizationStateCreateInfo& rasterization(const vk::PolygonMode& mode)
+        PipelineRasterizationStateCreateInfo& rasterization(const PolygonMode& mode)
         {
-            static auto info = vk::PipelineRasterizationStateCreateInfo{}
+            static auto info = PipelineRasterizationStateCreateInfo{}
                 .setDepthClampEnable(false)
                 .setRasterizerDiscardEnable(false)
                 .setPolygonMode(mode)
                 .setLineWidth(1.f)
-                .setCullMode(vk::CullModeFlagBits::eBack)   // Parametrize
-                .setFrontFace(vk::FrontFace::eClockwise)    //
+                .setCullMode(CullModeFlagBits::eBack)   // Parametrize
+                .setFrontFace(FrontFace::eClockwise)    //
                 .setDepthBiasEnable(false)
                 .setDepthBiasConstantFactor(0.f)//
                 .setDepthBiasClamp(0.f)         // Optional
@@ -71,11 +71,11 @@ namespace terracota::vk
             return info.setPolygonMode(mode);
         }
 
-        vk::PipelineMultisampleStateCreateInfo& multisample()
+        PipelineMultisampleStateCreateInfo& multisample()
         {
             // TODO: designated initializers
-            static auto info = vk::PipelineMultisampleStateCreateInfo{
-                .rasterizationSamples = vk::SampleCountFlagBits::e1,
+            static auto info = PipelineMultisampleStateCreateInfo{
+                .rasterizationSamples = SampleCountFlagBits::e1,
                 .sampleShadingEnable = false,
                 .minSampleShading = 1.f,
                 .pSampleMask = nullptr,
@@ -86,12 +86,12 @@ namespace terracota::vk
             return info;
         }
 
-        vk::PipelineColorBlendStateCreateInfo& color_blend()
+        PipelineColorBlendStateCreateInfo& color_blend()
         {
             // TODO: designated initializers
-            static auto info =  vk::PipelineColorBlendStateCreateInfo{}
+            static auto info =  PipelineColorBlendStateCreateInfo{}
                 .setLogicOpEnable(false)
-                .setLogicOp(vk::LogicOp::eCopy)
+                .setLogicOp(LogicOp::eCopy)
                 .setAttachments(color_blend_attachment)
                 .setBlendConstants({ 0.f, 0.f, 0.f, 0.f });
 
@@ -101,24 +101,24 @@ namespace terracota::vk
 
     namespace description
     {
-        vk::AttachmentDescription& color_attachment(vk::Format color_format)
+        AttachmentDescription& color_attachment(Format color_format)
         {
             // TODO: designated initializers
-            static auto description = vk::AttachmentDescription{}
+            static auto description = AttachmentDescription{}
                 .setFormat(color_format)
-                .setSamples(vk::SampleCountFlagBits::e1)
-                .setLoadOp(vk::AttachmentLoadOp::eClear)
-                .setStoreOp(vk::AttachmentStoreOp::eStore)
-                .setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)
-                .setStencilStoreOp(vk::AttachmentStoreOp::eDontCare)
-                .setInitialLayout(vk::ImageLayout::eUndefined)
-                .setFinalLayout(vk::ImageLayout::ePresentSrcKHR);
+                .setSamples(SampleCountFlagBits::e1)
+                .setLoadOp(AttachmentLoadOp::eClear)
+                .setStoreOp(AttachmentStoreOp::eStore)
+                .setStencilLoadOp(AttachmentLoadOp::eDontCare)
+                .setStencilStoreOp(AttachmentStoreOp::eDontCare)
+                .setInitialLayout(ImageLayout::eUndefined)
+                .setFinalLayout(ImageLayout::ePresentSrcKHR);
 
             return description;
         }
 
         // TODO: multiple attachments (color, depth, stencil, post-process)
-        std::array<vk::AttachmentDescription, 1>& attachment_array(vk::Format color_format)
+        std::array<AttachmentDescription, 1>& attachment_array(Format color_format)
         {
             static auto array = std::array{
                 color_attachment(color_format)
@@ -127,25 +127,25 @@ namespace terracota::vk
             return array;
         }
 
-        vk::SubpassDescription& subpass(uint32_t attachment_index)
+        SubpassDescription& subpass(uint32_t attachment_index)
         {
             // TODO: designated initializers
-            static auto reference = vk::AttachmentReference{}
+            static auto reference = AttachmentReference{}
                 .setAttachment(attachment_index)
-                .setLayout(vk::ImageLayout::eColorAttachmentOptimal);
+                .setLayout(ImageLayout::eColorAttachmentOptimal);
 
             static auto reference_array = std::array{ reference };
 
             // TODO: designated initializers
-            static auto description = vk::SubpassDescription{}
-                .setPipelineBindPoint(vk::PipelineBindPoint::eGraphics)
+            static auto description = SubpassDescription{}
+                .setPipelineBindPoint(PipelineBindPoint::eGraphics)
                 .setColorAttachments(reference_array);
 
             return description;
         }
 
         // TODO: same here, multiple subpasses
-        std::array <vk::SubpassDescription, 1>& subpass_array(uint32_t attachment_index)
+        std::array <SubpassDescription, 1>& subpass_array(uint32_t attachment_index)
         {
             static auto array = std::array{
                 subpass(attachment_index)
@@ -155,19 +155,19 @@ namespace terracota::vk
         }
     }
 
-    pipeline::pipeline(vk::raii::Device& device, vk::swap_chain& swap_chain, const params& params)
+    pipeline::pipeline(raii::Device& device, swap_chain& swap_chain, const params& params)
         : _ssi{ device, params.shaders }
         , _vpi{ params.extent }
         , _layout{ device,
-            vk::PipelineLayoutCreateInfo{}
+            PipelineLayoutCreateInfo{}
                 .setSetLayouts(nullptr)
                 .setPushConstantRanges(nullptr) }
         , _render_pass{ device,
-            vk::RenderPassCreateInfo{}
+            RenderPassCreateInfo{}
                 .setAttachments(description::attachment_array(swap_chain.info()().imageFormat))
                 .setSubpasses(description::subpass_array(0)) }
         , _pipeline{ device, nullptr,
-            vk::GraphicsPipelineCreateInfo{}
+            GraphicsPipelineCreateInfo{}
                 .setStages(_ssi())
                 .setPVertexInputState(&info::vertex_input())
                 .setPInputAssemblyState(&info::input_assembly(params.topology))
@@ -182,9 +182,9 @@ namespace terracota::vk
     {
         _framebuffers.reserve(swap_chain.framebuffer_views().size());
 
-        std::array<vk::ImageView, 1> attachments;
+        std::array<ImageView, 1> attachments;
 
-        vk::FramebufferCreateInfo info{
+        FramebufferCreateInfo info{
             .renderPass = *_render_pass,
             .width = params.extent.width,
             .height = params.extent.height,
@@ -194,7 +194,7 @@ namespace terracota::vk
         for (auto const& view : swap_chain.framebuffer_views())
         {
             attachments[0] = view;
-            _framebuffers.push_back(vk::raii::Framebuffer{ device, info.setAttachments(attachments) });
+            _framebuffers.push_back(raii::Framebuffer{ device, info.setAttachments(attachments) });
         }
     }
 }

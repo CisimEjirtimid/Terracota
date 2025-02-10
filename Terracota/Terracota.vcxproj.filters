@@ -73,6 +73,9 @@
     <ClCompile Include="vk\shader_stages_info.cpp">
       <Filter>Source Files\vk</Filter>
     </ClCompile>
+    <ClCompile Include="vk\physical_device_selector.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -121,6 +124,9 @@
       <Filter>Header Files\vk</Filter>
     </ClInclude>
     <ClInclude Include="vk\shader_stages_info.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="vk\physical_device_selector.h">
       <Filter>Header Files\vk</Filter>
     </ClInclude>
   </ItemGroup>

@@ -12,7 +12,7 @@ namespace terracota::vk
         }
     {}
 
-    vk::raii::Queue& queues::queue(const queue_family& family)
+    raii::Queue& queues::queue(const queue_family& family)
     {
         return _queue_map[family];
     }

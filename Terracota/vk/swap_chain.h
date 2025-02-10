@@ -6,15 +6,15 @@ namespace terracota::vk
 {
     class swap_chain
     {
-        vk::swap_chain_info _info;
-        vk::raii::SwapchainKHR _swap_chain;
-        std::vector<vk::raii::ImageView> _framebuffer_views;
+        swap_chain_info _info;
+        raii::SwapchainKHR _swap_chain;
+        std::vector<raii::ImageView> _framebuffer_views;
 
     public:
         swap_chain(context& context, const Extent2D& framebuffer_size);
 
-        const vk::swap_chain_info& info() const;
+        const swap_chain_info& info() const;
 
-        std::vector<vk::raii::ImageView>& framebuffer_views();
+        std::vector<raii::ImageView>& framebuffer_views();
     };
 }

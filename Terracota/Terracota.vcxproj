@@ -170,6 +170,7 @@
     <ClCompile Include="vk\context.cpp" />
     <ClCompile Include="vk\instance_info.cpp" />
     <ClCompile Include="vk\device_info.cpp" />
+    <ClCompile Include="vk\physical_device_selector.cpp" />
     <ClCompile Include="vk\pipeline.cpp" />
     <ClCompile Include="vk\queues.cpp" />
     <ClCompile Include="vk\queue_infos.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="vk\context.h" />
     <ClInclude Include="vk\instance_info.h" />
     <ClInclude Include="vk\device_info.h" />
+    <ClInclude Include="vk\physical_device_selector.h" />
     <ClInclude Include="vk\pipeline.h" />
     <ClInclude Include="vk\queues.h" />
     <ClInclude Include="vk\queue_infos.h" />

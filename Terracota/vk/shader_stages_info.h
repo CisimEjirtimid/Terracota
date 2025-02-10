@@ -7,11 +7,11 @@ namespace terracota::vk
 {
     class shader_stages_info
     {
-        std::map<vk::ShaderStageFlagBits, vk::raii::ShaderModule> _modules;
-        std::vector<vk::PipelineShaderStageCreateInfo> _info;
+        std::map<ShaderStageFlagBits, raii::ShaderModule> _modules;
+        std::vector<PipelineShaderStageCreateInfo> _info;
     public:
-        shader_stages_info(const vk::raii::Device& device, const std::map<vk::ShaderStageFlagBits, shaders::descriptor>& shaders);
+        shader_stages_info(const raii::Device& device, const std::map<ShaderStageFlagBits, shaders::descriptor>& shaders);
 
-        const std::vector<vk::PipelineShaderStageCreateInfo>& operator()() const;
+        const std::vector<PipelineShaderStageCreateInfo>& operator()() const;
     };
 }

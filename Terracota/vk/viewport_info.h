@@ -4,12 +4,12 @@ namespace terracota::vk
 {
     class viewport_info
     {
-        vk::Viewport _viewport;
-        vk::Rect2D _scissor;
+        Viewport _viewport;
+        Rect2D _scissor;
 
     public:
-        viewport_info(const vk::Extent2D& extent);
+        viewport_info(const Extent2D& extent);
 
-        vk::PipelineViewportStateCreateInfo& operator()() const;
+        PipelineViewportStateCreateInfo& operator()() const;
     };
 }

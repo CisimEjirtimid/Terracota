@@ -2,19 +2,19 @@
 
 namespace terracota::vk
 {
-    shader_stages_info::shader_stages_info(const vk::raii::Device& device, const std::map<vk::ShaderStageFlagBits, shaders::descriptor>& shaders)
+    shader_stages_info::shader_stages_info(const raii::Device& device, const std::map<ShaderStageFlagBits, shaders::descriptor>& shaders)
     {
         for (auto& [stage, descriptor] : shaders)
         {
             auto module =
-                vk::raii::ShaderModule
+                raii::ShaderModule
                 {
                     device,
-                    vk::ShaderModuleCreateInfo{}
+                    ShaderModuleCreateInfo{}
                         .setCode(descriptor.code)
                 };
 
-            _info.push_back(vk::PipelineShaderStageCreateInfo{}
+            _info.push_back(PipelineShaderStageCreateInfo{}
                 .setStage(stage)
                 .setModule(module)
                 .setPName(descriptor.entrypoint.c_str())
@@ -24,7 +24,7 @@ namespace terracota::vk
         }
     }
 
-    const std::vector<vk::PipelineShaderStageCreateInfo>& shader_stages_info::operator()() const
+    const std::vector<PipelineShaderStageCreateInfo>& shader_stages_info::operator()() const
     {
         return _info;
     }

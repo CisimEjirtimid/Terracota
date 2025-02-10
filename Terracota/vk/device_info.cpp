@@ -3,24 +3,22 @@
 
 namespace terracota::vk
 {
-    device_info::device_info(vk::queue_infos& queue_infos)
-        : _queue_infos{ queue_infos }
+    device_info::device_info(const queue_infos& queue_infos, const required_features& features)
+        : _extensions{ KHRSwapchainExtensionName }
+        , _info{
+            DeviceCreateInfo() // left setters because of the array proxy init
+                .setPEnabledFeatures(&features.get<PhysicalDeviceFeatures2>().features)
+                .setPEnabledExtensionNames(_extensions.native())
+                .setQueueCreateInfos(queue_infos()),
+            features.get<PhysicalDeviceVulkan11Features>(),
+            features.get<PhysicalDeviceVulkan12Features>(),
+            features.get<PhysicalDeviceVulkan13Features>()
+        }
     {
-        _required_physical_device_features
-            .setTessellationShader(true)
-            .setShaderFloat64(true)
-            .setGeometryShader(true);
-
-        _required_extensions.push_back(std::string_view{ vk::KHRSwapchainExtensionName });
-
-        _info = vk::DeviceCreateInfo()
-            .setPEnabledFeatures(&_required_physical_device_features)
-            .setPEnabledExtensionNames(_required_extensions.native())
-            .setQueueCreateInfos(_queue_infos());
     }
 
-    const vk::DeviceCreateInfo& device_info::operator()() const
+    const DeviceCreateInfo& device_info::operator()() const
     {
-        return _info;
+        return _info.get();
     }
 }

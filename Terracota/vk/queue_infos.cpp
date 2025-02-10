@@ -8,7 +8,7 @@ namespace terracota::vk
         static constexpr float default_priority = 1.f;
     }
 
-    queue_infos::queue_infos(const vk::raii::PhysicalDevice& physical_device, const vk::raii::SurfaceKHR& surface)
+    queue_infos::queue_infos(const raii::PhysicalDevice& physical_device, const raii::SurfaceKHR& surface)
     {
         using qf = queue_family;
 
@@ -26,18 +26,18 @@ namespace terracota::vk
                     selected = true;
                 };
 
-            if (qfp.queueFlags & vk::QueueFlagBits::eGraphics)
+            if (qfp.queueFlags & QueueFlagBits::eGraphics)
                 set(queue_family::graphics);
 
             if (physical_device.getSurfaceSupportKHR(current_idx, surface))
                 set(queue_family::presentation);
 
-            if (qfp.queueFlags & vk::QueueFlagBits::eCompute)
+            if (qfp.queueFlags & QueueFlagBits::eCompute)
                 set(qf::compute);
 
             if (selected)
                 _infos.push_back(
-                    vk::DeviceQueueCreateInfo{
+                    DeviceQueueCreateInfo{
                         .queueFamilyIndex = current_idx,
                         .queueCount = 1,
                         .pQueuePriorities = &default_priority
@@ -50,7 +50,7 @@ namespace terracota::vk
         }
     }
 
-    const std::vector<vk::DeviceQueueCreateInfo>& queue_infos::operator()() const
+    const std::vector<DeviceQueueCreateInfo>& queue_infos::operator()() const
     {
         return _infos;
     }
@@ -69,6 +69,7 @@ namespace terracota::vk
 
         return result;
     }
+
     magic_enum::containers::bitset<queue_family> queue_infos::family_set() const
     {
         return _family_set;

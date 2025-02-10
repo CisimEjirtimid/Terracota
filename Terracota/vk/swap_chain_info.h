@@ -5,24 +5,24 @@ namespace terracota::vk
 {
     struct swap_chain_info
     {
-        vk::SurfaceCapabilitiesKHR _surface_capabilities;
+        SurfaceCapabilitiesKHR _surface_capabilities;
 
-        std::vector<vk::SurfaceFormatKHR> _surface_formats;
-        std::vector<vk::PresentModeKHR> _present_modes;
+        std::vector<SurfaceFormatKHR> _surface_formats;
+        std::vector<PresentModeKHR> _present_modes;
 
         std::vector<uint32_t> _queue_family_indices;
 
-        vk::SwapchainCreateInfoKHR _info;
+        SwapchainCreateInfoKHR _info;
 
     public:
         struct params
         {
-            vk::Extent2D framebuffer_size;
+            Extent2D framebuffer_size;
             std::vector<uint32_t> queue_family_indices;
         };
 
-        swap_chain_info(vk::raii::PhysicalDevice& physical_device, vk::raii::SurfaceKHR& surface, const params& p);
+        swap_chain_info(raii::PhysicalDevice& physical_device, raii::SurfaceKHR& surface, const params& p);
 
-        const vk::SwapchainCreateInfoKHR& operator()() const;
+        const SwapchainCreateInfoKHR& operator()() const;
     };
 }

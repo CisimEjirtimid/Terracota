@@ -3,12 +3,21 @@
 
 namespace terracota::vk
 {
-    name_vector::name_vector(std::vector<const char*>& other)
+    name_vector::name_vector(const std::vector<const char*>& other)
     {
         clear();
         reserve(other.size());
 
         for (auto c_str : other)
+            emplace_back(std::string_view{ c_str });
+    }
+
+    name_vector::name_vector(const std::initializer_list<const char*>& initializer_list)
+    {
+        clear();
+        reserve(initializer_list.size());
+
+        for (auto c_str : initializer_list)
             emplace_back(std::string_view{ c_str });
     }
 
@@ -22,9 +31,9 @@ namespace terracota::vk
         return _raw;
     }
 
-    vk::name_vector name_vector::intersect(vk::name_vector& other)
+    name_vector name_vector::intersect(name_vector& other)
     {
-        vk::name_vector result;
+        name_vector result;
 
         std::sort(begin(), end(), cisim::strcmp_functor{});
 
@@ -58,7 +67,7 @@ namespace terracota::vk
         return result;
     }
 
-    bool valid(vk::Extent2D& extent)
+    bool valid(Extent2D& extent)
     {
         return extent.width != std::numeric_limits<uint32_t>::max()
             && extent.height != std::numeric_limits<uint32_t>::max();
