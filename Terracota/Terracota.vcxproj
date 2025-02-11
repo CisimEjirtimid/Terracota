@@ -168,6 +168,7 @@
     <ClCompile Include="cen\context.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="vk\context.cpp" />
+    <ClCompile Include="vk\frame_data.cpp" />
     <ClCompile Include="vk\instance_info.cpp" />
     <ClCompile Include="vk\device_info.cpp" />
     <ClCompile Include="vk\physical_device_selector.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="cen\utils.h" />
     <ClInclude Include="shaders\utils.h" />
     <ClInclude Include="vk\context.h" />
+    <ClInclude Include="vk\frame_data.h" />
     <ClInclude Include="vk\instance_info.h" />
     <ClInclude Include="vk\device_info.h" />
     <ClInclude Include="vk\physical_device_selector.h" />

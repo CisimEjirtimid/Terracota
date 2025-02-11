@@ -1,7 +1,7 @@
 #pragma once
 #include "instance_info.h"
 #include "device_info.h"
-
+#include "frame_data.h"
 #include "cen/utils.h"
 
 namespace terracota::vk
@@ -19,8 +19,7 @@ namespace terracota::vk
         device_info di;
         raii::Device device;
 
-        raii::CommandPool command_pool;
-        raii::CommandBuffers command_buffers;
+        std::array<frame_data, FRAME_OVERLAP> frames;
 
         context(cen::window& window, const instance_info& ii, const physical_device_requirements& pdr);
     };
