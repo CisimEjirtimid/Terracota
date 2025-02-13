@@ -69,7 +69,7 @@ namespace terracota::vk
             .setImageColorSpace(surface_format.colorSpace)
             .setImageExtent(pick_extent(_surface_capabilities, p.framebuffer_size))
             .setImageArrayLayers(1)
-            .setImageUsage(ImageUsageFlagBits::eColorAttachment)
+            .setImageUsage(ImageUsageFlagBits::eColorAttachment | ImageUsageFlagBits::eTransferDst)
             .setQueueFamilyIndices(_queue_family_indices)
             .setImageSharingMode(
                 _queue_family_indices.size() != 1

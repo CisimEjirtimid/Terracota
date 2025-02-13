@@ -11,6 +11,15 @@ namespace terracota::vk
         raii::CommandPool pool;
         raii::CommandBuffers buffers;
 
+        // gpu -> gpu wait on swapchain image acquisition
+        raii::Semaphore swapchain_semaphore;
+
+        // gpu -> gpu wait on presenting the finished image
+        raii::Semaphore present_semaphore;
+
+        // gpu -> cpu wait on finishing current commands
+        raii::Fence command_fence;
+
         frame_data(raii::Device& device, const queue_infos& qi);
     };
 }

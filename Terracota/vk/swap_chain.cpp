@@ -37,6 +37,11 @@ namespace terracota::vk
         return _info;
     }
 
+    raii::SwapchainKHR& swap_chain::operator()()
+    {
+        return _swap_chain;
+    }
+
     std::vector<raii::ImageView>& swap_chain::framebuffer_views()
     {
         return _framebuffer_views;

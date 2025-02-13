@@ -1,6 +1,5 @@
 #include "context.h"
 #include "physical_device_selector.h"
-#include <construct_array.h>
 
 namespace terracota::vk
 {
@@ -26,7 +25,6 @@ namespace terracota::vk
         , qi{ physical_device, surface }
         , di{ qi, pdr.features() }
         , device{ physical_device, di() }
-        , frames{ cisim::construct_array<frame_data, FRAME_OVERLAP>(device, qi) }
     {
     }
 }

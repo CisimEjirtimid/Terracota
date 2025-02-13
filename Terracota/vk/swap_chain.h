@@ -4,6 +4,7 @@
 
 namespace terracota::vk
 {
+    // TODO: rename to swapchain, without _
     class swap_chain
     {
         swap_chain_info _info;
@@ -14,6 +15,8 @@ namespace terracota::vk
         swap_chain(context& context, const Extent2D& framebuffer_size);
 
         const swap_chain_info& info() const;
+
+        raii::SwapchainKHR& operator()();
 
         std::vector<raii::ImageView>& framebuffer_views();
     };
